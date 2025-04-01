@@ -94,25 +94,20 @@
     class="antialiased flex h-full text-base text-gray-700 [--tw-page-bg:#fefefe] [--tw-page-bg-dark:var(--tw-coal-500)] demo1 sidebar-fixed header-fixed bg-[--tw-page-bg] dark:bg-[--tw-page-bg-dark]">
 
     <div id="map"></div>
-    {{-- <div class="controls">
-        <select id="searchBox">
-            <option value="">Seleccione una zona...</option>
-        </select>
-        <button onclick="searchPlace()">Buscar</button>
-        <button onclick="centerMap()">Centrar</button>
-        <button onclick="startNavigation()">Iniciar Navegación</button>
-    </div> --}}
 
-    <button class="btn btn-icon btn-outline btn-success fixed bottom-28 right-4" data-modal-toggle="#modalBusqueda">
-        <i class="ki-outline ki-magnifier"></i>
+    <button id="iniciarRuta" class="btn  btn-outline btn-primary fixed bottom-40 right-4" onclick="startNavigation()">
+        <i class="ki-filled ki-route"></i> Iniciar Ruta
+    </button>
+    <button id="buscar" class="btn btn-outline btn-success fixed bottom-28 right-4" data-modal-toggle="#modalBusqueda">
+        <i class="ki-outline ki-magnifier"></i> Buscar
     </button>
      
-    <button class="btn  btn-outline btn-primary fixed bottom-16 right-4">
+    <button id="centrar" class="btn  btn-outline btn-primary fixed bottom-16 right-4" onclick="centerMap()">
         <i class="ki-filled ki-focus"></i> Centrar
     </button>
 
-    <button class="btn  btn-outline btn-danger fixed bottom-4 right-4">
-        <i class="ki-filled ki-cross-circle"></i> Salir
+    <button id="salirRuta" class="btn  btn-outline btn-danger fixed bottom-4 right-4">
+        <i class="ki-filled ki-cross-circle"></i> Salir Ruta
     </button>
   
 
@@ -148,7 +143,7 @@
         
         let map, userMarker, directionsService, directionsRenderer;
         let userLocation = null;
-        let watchingPosition = false;
+        let navigating = false;
         const destination = {
             lat: 4.316583,
             lng: -74.7727809
@@ -159,34 +154,31 @@
         let lastSearchTime = 0;
         const searchCooldown = 1000;
 
-        const places = [{
-                name: "Cancha Tenis",
-                categoria: "Deporte",
-                location: {
-                    lat: 4.314850,
-                    lng: -74.774845
-                },
-                icon: "https://tse2.mm.bing.net/th?id=OIP.3JDA1BMjZiOTdM60A0VEgAHaHa&pid=Api&P=0&h=180"
-            },
-            {
-                name: "Golf",
-                categoria: "Deporte",
-                location: {
-                    lat: 4.313433,
-                    lng: -74.774156
-                },
-                icon: "https://static.vecteezy.com/system/resources/previews/000/422/894/original/golf-icon-vector-illustration.jpg"
-            },
-            {
-                name: "Gimnasio",
-                categoria: "Deporte",
-                location: {
-                    lat: 4.311515,
-                    lng: -74.768195
-                },
-                icon: "https://tse2.mm.bing.net/th?id=OIP.3JDA1BMjZiOTdM60A0VEgAHaHa&pid=Api&P=0&h=180"
-            }
-        ];
+        let modalInstanceBusq;
+
+
+        const MIN_ZOOM = 15;
+        const MAX_ZOOM = 20;
+        let placesMarkers = []; // Almacenar los marcadores y overlays
+
+        document.getElementById("iniciarRuta").classList.remove("hidden");
+        document.getElementById("buscar").classList.remove("hidden");
+        document.getElementById("salirRuta").classList.add("hidden");
+
+
+        document.addEventListener("DOMContentLoaded", () => {
+            KTModal.init()
+
+            // Initialzie pending modals
+            KTModal.createInstances();
+            const modalElBusq = document.querySelector('#modalBusqueda');  
+            modalInstanceBusq = KTModal.getInstance(modalElBusq);
+
+            modalInstanceBusq.on('show', () => {
+                realizarBusqueda();
+            });
+        });
+       
         
         document.getElementById('searchInput').addEventListener('input', manejarBusqueda);
 
@@ -248,69 +240,106 @@
                 lng: position.coords.longitude
             };
             userMarker.setPosition(userLocation);
-            if (watchingPosition) {
+            if (navigating) {
                 map.setCenter(userLocation);
             }
             checkIfUserDeviates();
 
         }
 
-        function addPlacesToMap() {
-            places.forEach(lugar => {
-                const marcador = new google.maps.Marker({
-                    position: {
-                        lat: lugar.location.lat,
-                        lng: lugar.location.lng
-                    },
-                    map: map,
-                    title: lugar.name,
-                    icon: "https://maps.gstatic.com/mapfiles/transparent.png"
+        async function addPlacesToMap() {
+            try {
+                // Obtener los lugares dinámicamente desde la API
+                const places = await buscarUbicaciones('@');
+                console.log(places);
+                
+                // Limpiar marcadores anteriores
+                // clearMarkers();
+
+                places.forEach(lugar => {
+                    const marcador = new google.maps.Marker({
+                        position: {
+                            lat: Number(lugar.latitud),
+                            lng: Number(lugar.longitud)
+                        },
+                        map: null, // Se controla según el zoom
+                        title: lugar.nombre,
+                        icon: "https://maps.gstatic.com/mapfiles/transparent.png"
+                    });
+
+                    // Crear el ícono redondo personalizado
+                    const divIcon = document.createElement("div");
+                    divIcon.className = "place-icon";
+                    divIcon.style.background = '#17C653'; //ojooo
+                    divIcon.innerHTML = `<img src="${lugar.imagen_destacada}" alt="icono">`;
+
+                    // Crear la etiqueta con el nombre del lugar
+                    const divLabel = document.createElement("div");
+                    divLabel.className = "place-label";
+                    divLabel.innerHTML = `${lugar.nombre} <br> <small style="color:gray">${lugar.tipo.nombre}</small>`;
+
+
+                    
+                    // Agregar los elementos al mapa como overlay
+                    const overlay = new google.maps.OverlayView();
+                    overlay.onAdd = function () {
+                        const panes = this.getPanes();
+                        panes.overlayMouseTarget.appendChild(divIcon);
+                        panes.overlayMouseTarget.appendChild(divLabel);
+                    };
+                    overlay.draw = function () {
+                        const pos = this.getProjection().fromLatLngToDivPixel(marcador.getPosition());
+                        divIcon.style.left = `${pos.x}px`;
+                        divIcon.style.top = `${pos.y}px`;
+                        divLabel.style.left = `${pos.x + 20}px`;
+                        divLabel.style.top = `${pos.y - 10}px`;
+                    };
+                    overlay.setMap(map);
+
+                    // Guardar en el array
+                    placesMarkers.push({ marcador, overlay });
                 });
 
-                // Crear el ícono redondo personalizado
-                const divIcon = document.createElement("div");
-                divIcon.className = "place-icon";
-                divIcon.style.background = lugar.color;
-                divIcon.innerHTML = `<img src="${lugar.icon}" alt="icono">`;
+                // Verificar el zoom al inicio y cada vez que cambie
+                // updatePlacesVisibility();
+                // google.maps.event.addListener(map, "zoom_changed", updatePlacesVisibility);
 
-                // Crear la etiqueta con el name del lugar
-                const divLabel = document.createElement("div");
-                divLabel.className = "place-label";
-                divLabel.innerHTML = `${lugar.name} <br> <small style="color:gray">${lugar.categoria}</small>`;
-
-                // Agregar los elementos al mapa
-                const overlay = new google.maps.OverlayView();
-                overlay.onAdd = function() {
-                    const panes = this.getPanes();
-                    panes.overlayMouseTarget.appendChild(divIcon);
-                    panes.overlayMouseTarget.appendChild(divLabel);
-                };
-                overlay.draw = function() {
-                    const pos = this.getProjection().fromLatLngToDivPixel(marcador.getPosition());
-                    divIcon.style.left = `${pos.x}px`;
-                    divIcon.style.top = `${pos.y}px`;
-                    divLabel.style.left = `${pos.x + 20}px`;
-                    divLabel.style.top = `${pos.y - 10}px`;
-                };
-                overlay.setMap(map);
-
-                // // Evento para mostrar detalles al hacer clic
-                // marcador.addListener("click", () => {
-                //     alert(`📍 ${lugar.nombre}\nCategoría: ${lugar.categoria}\nUbicación: ${lugar.lat.toFixed(6)}, ${lugar.lng.toFixed(6)}`);
-                // });
-            });
-
+            } catch (error) {
+                console.error("Error al agregar lugares al mapa:", error);
+            }
         }
+
+        // // Función para mostrar u ocultar los places según el zoom
+        // function updatePlacesVisibility() {
+        //     const zoom = map.getZoom();
+        //     const visible = zoom >= MIN_ZOOM && zoom <= MAX_ZOOM;
+
+        //     placesMarkers.forEach(({ marcador, overlay }) => {
+        //         marcador.setMap(visible ? map : null);
+        //         overlay.setMap(visible ? map : null);
+        //     });
+        // }
+
+        // // Función para limpiar los marcadores anteriores antes de agregar nuevos
+        // function clearMarkers() {
+        //     placesMarkers.forEach(({ marcador, overlay }) => {
+        //         marcador.setMap(null);
+        //         overlay.setMap(null);
+        //     });
+        //     placesMarkers = []; // Vaciar el array de marcadores
+        // }
+
 
 
         async function searchPlace(ubicacionId) {
             const ubicacion = await obtenerUbicacion(ubicacionId);
             if (!ubicacion) return;
-            console.log(ubicacion);
-            
-            const targetLocation = { lat: ubicacion.latitud, lng: ubicacion.longitud };
-            console.log(targetLocation);
-            
+          
+            const targetLocation = { 
+                lat:  Number(ubicacion.latitud), 
+                lng:  Number(ubicacion.longitud)
+            };
+         
             map.setCenter(targetLocation);
             calculateRoute(targetLocation);
         }
@@ -325,6 +354,7 @@
             }, (result, status) => {
                 if (status === "OK") {
                     directionsRenderer.setDirections(result);
+                    modalInstanceBusq.hide();
                 } else {
                     console.error("Error al calcular la ruta: ", status);
                 }
@@ -345,7 +375,21 @@
 
 
         function startNavigation() {
-            watchingPosition = true;
+            console.log('cantidad de rutas: ',  directionsRenderer.getDirections());
+
+            if (!directionsRenderer.getDirections()) {
+                alert('sin ruta');
+                return;
+            }
+            document.getElementById("iniciarRuta").classList.add("hidden");
+            document.getElementById("buscar").classList.add("hidden");
+
+            document.getElementById("salirRuta").classList.remove("hidden");
+         
+            navigating = true;
+
+            map.setZoom(18); // Aumentar el zoom para mejor visualización
+            map.setCenter(userLocation);
         }
 
         function centerMap() {
@@ -378,8 +422,10 @@
             directionsRenderer.setDirections({
                 routes: []
             });
-            document.getElementById("searchPanel").classList.remove("hidden");
-            document.getElementById("navigationControls").classList.add("hidden");
+            document.getElementById("iniciarRuta").classList.remove("hidden");
+            document.getElementById("buscar").classList.remove("hidden");
+
+            document.getElementById("salirRuta").classList.add("hidden");
             navigating = false;
         }
 
@@ -421,12 +467,13 @@
 
         // Función que ejecuta la búsqueda y actualiza el DOM
         async function realizarBusqueda() {
-            const busqueda = document.getElementById('searchInput').value.trim();
+            let  busqueda = document.getElementById('searchInput').value.trim();
             const contenedor = document.getElementById('searchResults');
 
             if (busqueda === '') {
-                contenedor.innerHTML = '<p class="text-gray-500 text-sm p-2">Escribe para buscar...</p>';
-                return;
+                busqueda = '@';
+                // contenedor.innerHTML = '<p class="text-gray-500 text-sm p-2">Escribe para buscar...</p>';
+                // return;
             }
 
             const resultados = await buscarUbicaciones(busqueda);
@@ -468,18 +515,14 @@
             });
         }
 
-
         const contenedorResultados = document.getElementById('searchResults');
 
         // Delegación de eventos: Añadimos un solo event listener al contenedor
         contenedorResultados.addEventListener('click', async (e) => {
             const card = e.target.closest('.card-body');
 
-            
             if (card) {
                 const ubicacionId = card.getAttribute('data-id');
-
-                console.log(ubicacionId);
                 
                 const result = await Swal.fire({
                     title: '¿Deseas ver la ruta hacia esta ubicación?',
@@ -496,20 +539,17 @@
             }
         });
 
-
-
     </script>
 
-    <script
-        src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=geometry,places&callback=initMap"
-        async defer></script>
-
-
+  
     <script src="assets/js/core.bundle.js"></script>
     <script src="assets/vendors/apexcharts/apexcharts.min.js"></script>
     <script src="assets/js/widgets/general.js"></script>
     <script src="assets/js/layouts/demo1.js"></script>
-    <!-- End of Scripts -->
+    
+    <script
+    src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=geometry,places&callback=initMap"
+    ></script><!-- End of Scripts -->
 </body>
 
 </html>

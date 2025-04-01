@@ -37,7 +37,7 @@ class UbicacionesController extends Controller
      */
     public function show(string $id)
     {
-        return Ubicacion::find($id);
+        return Ubicacion::with('tipo')->find($id);
     }
 
     /**
@@ -74,7 +74,7 @@ class UbicacionesController extends Controller
             return response()->json([]);
         }
     
-        $ubicaciones = Ubicacion::when($busqueda === '@', function ($query) {
+        $ubicaciones = Ubicacion::with('tipo')->when($busqueda === '@', function ($query) {
                 $query->where('destacada', true);
             }, function ($query) use ($busqueda) {
                 $query->where('nombre', 'LIKE', "%{$busqueda}%");
