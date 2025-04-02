@@ -234,7 +234,7 @@
         }
 
         function updateUserLocation(position) {
-            console.log(updateUserLocation);
+            
             
             userLocation = {
                 lat: position.coords.latitude,
@@ -354,6 +354,8 @@
         function calculateRoute(targetLocation) {
             if (!userLocation) return;
 
+            directionsRenderer.setDirections({ routes: [] });
+            
             directionsService.route({
                 origin: userLocation,
                 destination: targetLocation,
@@ -361,6 +363,11 @@
             }, (result, status) => {
                 if (status === "OK") {
                     directionsRenderer.setDirections(result);
+                    console.log(result.routes[0]);
+                    
+                    routePath = result.routes[0].overview_path;
+
+
                     modalInstanceBusq.hide();
                 } else {
                     console.error("Error al calcular la ruta: ", status);
