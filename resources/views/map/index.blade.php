@@ -240,8 +240,12 @@
                 lng: position.coords.longitude
             };
             userMarker.setPosition(userLocation);
+            
             if (navigating) {
                 map.setCenter(userLocation);
+                if (position.coords.heading !== null) {
+                    map.setHeading(position.coords.heading); 
+                }
             }
             checkIfUserDeviates();
 
