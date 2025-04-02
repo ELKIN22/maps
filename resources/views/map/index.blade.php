@@ -185,7 +185,7 @@
 
         function initMap() {
             map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 16,
+                zoom: 15,
                 center: destination,
                 mapTypeId: "roadmap",
                 tilt: 45,
@@ -258,7 +258,6 @@
             try {
                 // Obtener los lugares dinámicamente desde la API
                 const places = await buscarUbicaciones('@');
-                console.log(places);
                 
                 // Limpiar marcadores anteriores
                 // clearMarkers();
@@ -269,31 +268,55 @@
                             lat: Number(lugar.latitud),
                             lng: Number(lugar.longitud)
                         },
-                        map: null, // Se controla según el zoom
+                        map: map, // Se muestra en el mapa directamente
                         title: lugar.nombre,
                         icon: "https://maps.gstatic.com/mapfiles/transparent.png"
+                    });
+
+                    // Crear el InfoWindow con botones
+                    const infoWindow = new google.maps.InfoWindow({
+                        content: `
+                            <div style="text-align:center;" class="btn-group">
+                               
+                                <button id="iniciarRuta" class="btn  btn-outline btn-primary" onclick="startNavigation()">
+                                    <i class="ki-filled ki-route"></i> Iniciar Ruta
+                                </button>
+                               <button id="iniciarRuta" class="btn  btn-outline btn-primary" onclick="startNavigation()">
+                                    <i class="ki-filled ki-route"></i> Galeria
+                                </button>
+                            </div>
+                        `
                     });
 
                     // Crear el ícono redondo personalizado
                     const divIcon = document.createElement("div");
                     divIcon.className = "place-icon";
-                    divIcon.style.background = '#17C653'; //ojooo
+                    divIcon.style.background = '#17C653';
+                    divIcon.style.position = "absolute";
+                    divIcon.style.cursor = "pointer"; // Para que se vea como clickeable
                     divIcon.innerHTML = `<img src="${lugar.imagen_destacada}" alt="icono">`;
 
                     // Crear la etiqueta con el nombre del lugar
                     const divLabel = document.createElement("div");
                     divLabel.className = "place-label";
+                    divLabel.style.position = "absolute";
                     divLabel.innerHTML = `${lugar.nombre} <br> <small style="color:gray">${lugar.tipo.nombre}</small>`;
 
-
-                    
                     // Agregar los elementos al mapa como overlay
                     const overlay = new google.maps.OverlayView();
                     overlay.onAdd = function () {
                         const panes = this.getPanes();
                         panes.overlayMouseTarget.appendChild(divIcon);
                         panes.overlayMouseTarget.appendChild(divLabel);
+                        
+                        // 📌 Hacer clic en el icono y abrir el InfoWindow
+                        [divIcon, divLabel].forEach(element => {
+                            element.addEventListener("click", () => {
+                                infoWindow.open(map, marcador);
+                            });
+                        });
                     };
+                    
                     overlay.draw = function () {
                         const pos = this.getProjection().fromLatLngToDivPixel(marcador.getPosition());
                         divIcon.style.left = `${pos.x}px`;
@@ -301,6 +324,7 @@
                         divLabel.style.left = `${pos.x + 20}px`;
                         divLabel.style.top = `${pos.y - 10}px`;
                     };
+                    
                     overlay.setMap(map);
 
                     // Guardar en el array
@@ -363,7 +387,7 @@
             }, (result, status) => {
                 if (status === "OK") {
                     directionsRenderer.setDirections(result);
-                    console.log(result.routes[0]);
+
                     
                     routePath = result.routes[0].overview_path;
 
@@ -423,9 +447,9 @@
                 );
                 return Math.min(minDist, dist);
             }, Infinity);
-            alert(nearestDistance > deviationThreshold);
+           
             if (nearestDistance > deviationThreshold) {
-                alert('desviacion: ', nearestDistance);
+              
 
                 console.log("Recalculando ruta por desviación...");
                 calculateRoute();
@@ -563,7 +587,7 @@
     
     <script
     src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=geometry,places&callback=initMap"
-    ></script><!-- End of Scripts -->
+    ></script>
 </body>
 
 </html>
