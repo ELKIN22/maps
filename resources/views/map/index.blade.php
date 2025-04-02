@@ -234,15 +234,18 @@
         }
 
         function updateUserLocation(position) {
-
+            console.log(updateUserLocation);
+            
             userLocation = {
                 lat: position.coords.latitude,
                 lng: position.coords.longitude
             };
             userMarker.setPosition(userLocation);
+            console.log();
             
             if (navigating) {
                 map.setCenter(userLocation);
+                alert(position.coords.heading);
                 if (position.coords.heading !== null) {
                     map.setHeading(position.coords.heading); 
                 }
