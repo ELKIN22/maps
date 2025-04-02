@@ -224,7 +224,7 @@
             if (navigator.geolocation) {
                 navigator.geolocation.watchPosition(updateUserLocation, () => alert("No se pudo obtener la ubicación"), {
                     enableHighAccuracy: true,
-                    maximumAge: 0
+                    maximumAge: 3000
                 });
             } else {
                 alert("Tu navegador no soporta geolocalización");
@@ -241,11 +241,11 @@
                 lng: position.coords.longitude
             };
             userMarker.setPosition(userLocation);
-            console.log();
+          
             
             if (navigating) {
                 map.setCenter(userLocation);
-                alert(position.coords.heading);
+             
                 if (position.coords.heading !== null) {
                     map.setHeading(position.coords.heading); 
                 }
@@ -416,7 +416,7 @@
                 );
                 return Math.min(minDist, dist);
             }, Infinity);
-
+            alert(nearestDistance > deviationThreshold);
             if (nearestDistance > deviationThreshold) {
                 alert('desviacion: ', nearestDistance);
 
