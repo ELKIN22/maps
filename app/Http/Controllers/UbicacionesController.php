@@ -37,7 +37,7 @@ class UbicacionesController extends Controller
      */
     public function show(string $id)
     {
-        return Ubicacion::with('tipo')->find($id);
+        return Ubicacion::with('tipo','imagenes')->find($id);
     }
 
     /**

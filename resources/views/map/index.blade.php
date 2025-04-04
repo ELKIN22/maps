@@ -138,7 +138,94 @@
         </div>
     </div>
 
+    <div class="modal" data-modal="true" id="modalGaleria">
+        <div class="modal-content   max-w-[800px] top-[10%] max-h-[80%]">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    Galeria 
+                </h3>
+                <button class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
+                    <i class="ki-outline ki-cross">
+                    </i>
+                </button>
+            </div>
+            <div class="modal-body ">
+                <div class="flex justify-center items-center  bg-gray-100">
+                    <div class="grid gap-4 max-w-2xl">
+                        <!-- Imagen Principal -->
+                        <div>
+                            <img id="mainImage" class="h-auto w-full max-w-full rounded-lg object-cover object-center md:h-[480px]"
+                                src=""
+                                alt="" />
+                        </div>
+
+                        <!-- Carrusel de Miniaturas -->
+                        <div class="overflow-x-auto">
+                            <div id="thumbnailContainer" class="flex gap-4">
+                                <!-- Las miniaturas se llenarán dinámicamente con JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <script>
+        
+
+        async function cargarGaleria(id) {
+            try {
+                const data = await obtenerUbicacion(id);
+                if (!data || !data.imagenes || !Array.isArray(data.imagenes)) {
+                    console.error("No se encontraron imágenes válidas.");
+                    return;
+                }
+
+               
+
+                const images = data.imagenes;
+                console.log(images);
+                
+
+                const mainImage = document.getElementById("mainImage");
+                const thumbnailContainer = document.getElementById("thumbnailContainer");
+
+                // Limpiar contenedor y reiniciar imagen principal
+                thumbnailContainer.innerHTML = "";
+                mainImage.src = images[0].url || ""; // Primera imagen como principal
+
+                images.forEach((imgSrc, index) => {
+                   
+                    
+                    const thumb = document.createElement("img");
+                    thumb.src = imgSrc.url;
+                    thumb.classList = "object-cover object-center h-20 w-20 rounded-lg cursor-pointer border-2 border-transparent hover:border-green-500 transition";
+
+                    thumb.addEventListener("click", () => {
+                        mainImage.src = imgSrc.url;
+
+                        document.querySelectorAll("#thumbnailContainer img")
+                            .forEach(img => img.classList.remove("border-green-500"));
+
+                        thumb.classList.add("border-green-500");
+                    });
+
+                    thumbnailContainer.appendChild(thumb);
+                });
+
+                // Marcar la primera miniatura como seleccionada por defecto
+                if (thumbnailContainer.children[0]) {
+                    thumbnailContainer.children[0].classList.add("border-green-500");
+                }
+
+                modalInstanceGaleria.show();
+
+            } catch (error) {
+                console.error("Error al cargar la galería:", error);
+            }
+        }
 
         
         let map, userMarker, directionsService, directionsRenderer;
@@ -161,6 +248,9 @@
         const MAX_ZOOM = 20;
         let placesMarkers = []; // Almacenar los marcadores y overlays
 
+
+        let activeInfoWindow = null;
+
         document.getElementById("iniciarRuta").classList.remove("hidden");
         document.getElementById("buscar").classList.remove("hidden");
         document.getElementById("salirRuta").classList.add("hidden");
@@ -173,6 +263,9 @@
             KTModal.createInstances();
             const modalElBusq = document.querySelector('#modalBusqueda');  
             modalInstanceBusq = KTModal.getInstance(modalElBusq);
+
+            const modalGaleria = document.querySelector('#modalGaleria');  
+            modalInstanceGaleria = KTModal.getInstance(modalGaleria);
 
             modalInstanceBusq.on('show', () => {
                 realizarBusqueda();
@@ -242,6 +335,7 @@
             };
             userMarker.setPosition(userLocation);
           
+            console.log(userLocation);
             
             if (navigating) {
                 map.setCenter(userLocation);
@@ -250,6 +344,7 @@
                     map.setHeading(position.coords.heading); 
                 }
             }
+
             checkIfUserDeviates();
 
         }
@@ -278,11 +373,11 @@
                         content: `
                             <div style="text-align:center;" class="btn-group">
                                
-                                <button id="iniciarRuta" class="btn  btn-outline btn-primary" onclick="startNavigation()">
-                                    <i class="ki-filled ki-route"></i> Iniciar Ruta
+                                <button id="iniciarRuta" class="btn  btn-outline btn-primary" onclick="searchPlace(${lugar.id})">
+                                    <i class="ki-filled ki-route"></i> Ver Ruta
                                 </button>
-                               <button id="iniciarRuta" class="btn  btn-outline btn-primary" onclick="startNavigation()">
-                                    <i class="ki-filled ki-route"></i> Galeria
+                               <button id="iniciarRuta" class="btn  btn-outline btn-primary" onclick="cargarGaleria(${lugar.id})" >
+                                  <i class="ki-filled ki-picture"></i> Galeria
                                 </button>
                             </div>
                         `
@@ -312,7 +407,11 @@
                         // 📌 Hacer clic en el icono y abrir el InfoWindow
                         [divIcon, divLabel].forEach(element => {
                             element.addEventListener("click", () => {
+                                if (activeInfoWindow) {
+                                    activeInfoWindow.close(); // Cierra el InfoWindow anterior
+                                }
                                 infoWindow.open(map, marcador);
+                                activeInfoWindow = infoWindow; // Guarda el nuevo InfoWindow activo
                             });
                         });
                     };
@@ -360,9 +459,16 @@
         //     placesMarkers = []; // Vaciar el array de marcadores
         // }
 
-
+        function cerrarInfoWindow() {
+            if (activeInfoWindow) {
+                activeInfoWindow.close();
+                activeInfoWindow = null;
+            }
+        }
 
         async function searchPlace(ubicacionId) {
+            cerrarInfoWindow()
+
             const ubicacion = await obtenerUbicacion(ubicacionId);
             if (!ubicacion) return;
           
@@ -374,10 +480,12 @@
             map.setCenter(targetLocation);
             calculateRoute(targetLocation);
         }
-
+        let ultimaCoordenada;
         function calculateRoute(targetLocation) {
+            ultimaCoordenada = targetLocation;
+            
             if (!userLocation) return;
-
+            
             directionsRenderer.setDirections({ routes: [] });
             
             directionsService.route({
@@ -436,7 +544,7 @@
             }
         }
 
-
+        let initialCheckDone = false;
         function checkIfUserDeviates() {
             if (!routePath.length || !userLocation) return;
 
@@ -448,11 +556,19 @@
                 return Math.min(minDist, dist);
             }, Infinity);
            
-            if (nearestDistance > deviationThreshold) {
-              
+            if (!initialCheckDone) {
+                // Esperar hasta que el usuario esté razonablemente cerca de la ruta
+                console.log(nearestDistance);
+                
+                if (nearestDistance < (deviationThreshold / 2)) { 
+                    initialCheckDone = true;
+                }
+                return;
+            }
 
+            if (nearestDistance > deviationThreshold) {
                 console.log("Recalculando ruta por desviación...");
-                calculateRoute();
+                calculateRoute(ultimaCoordenada);
             }
         }
 
@@ -465,6 +581,8 @@
 
             document.getElementById("salirRuta").classList.add("hidden");
             navigating = false;
+
+            initialCheckDone = true;
         }
 
         async function buscarUbicaciones(busqueda) {
@@ -544,8 +662,8 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="flex gap-2.5 btn btn-sm btn-icon btn-clear btn-success">
-                            <i class="ki-filled ki-check-squared"></i>
+                        <div class="flex gap-2.5 btn btn-sm  btn-clear btn-success" onclick="cargarGaleria(${ubicacion.id})">
+                            <i class="ki-filled ki-picture"></i> Galeria
                         </div>
                     </div>
                 `;
@@ -554,10 +672,18 @@
         }
 
         const contenedorResultados = document.getElementById('searchResults');
-
+        
         // Delegación de eventos: Añadimos un solo event listener al contenedor
         contenedorResultados.addEventListener('click', async (e) => {
             const card = e.target.closest('.card-body');
+            const botonGaleria = e.target.closest('.btn-success');
+
+            if (botonGaleria) {
+                e.stopPropagation(); // Evita que el clic en el botón active el evento del card-body
+                const ubicacionId = botonGaleria.closest('.card-body').getAttribute('data-id');
+                cargarGaleria(ubicacionId);
+                return;
+            }
 
             if (card) {
                 const ubicacionId = card.getAttribute('data-id');
@@ -591,3 +717,7 @@
 </body>
 
 </html>
+
+
+
+       
