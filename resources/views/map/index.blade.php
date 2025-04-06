@@ -399,7 +399,7 @@
 
                     const divLabel = document.createElement("div");
                     divLabel.className = "place-label";
-                    divLabel.innerHTML = `${lugar.nombre} <br> <small style="color:gray">${lugar.tipo.nombre || ''}</small>`;
+                    divLabel.innerHTML = `${lugar.nombre}`;
 
                     const overlay = new google.maps.OverlayView();
                     overlay.onAdd = function () {
@@ -762,8 +762,8 @@
                         <span class="text-xs font-medium text-gray-500">${ubicacion.tipo?.nombre || 'Ubicación'}</span>
                     </div>
                      ${ubicacion.imagenes && ubicacion.imagenes.length > 0 ? `
-                    <button class="btn btn-xs btn-icon btn-light-success flex-shrink-0 btn-galeria-busqueda" title="Ver Galería">
-                       <i class="ki-duotone ki-picture fs-5"><span class="path1"></span><span class="path2"></span></i>
+                    <button class="btn btn-outline  btn-success flex-shrink-0 btn-galeria-busqueda" title="Ver Galería">
+                       <i class="ki-duotone ki-picture fs-5"></i> Galeria
                     </button>
                     ` : '' }
                 `;
