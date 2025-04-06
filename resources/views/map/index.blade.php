@@ -39,8 +39,8 @@
         #map { height: 100vh; width: 100%; }
 
         .place-icon {
-            width: 40px; /* Tamaño total del círculo */
-            height: 40px;
+            width: 32px; /* Tamaño total del círculo */
+            height: 32px;
             border-radius: 50%; /* Hace que sea un círculo */
             display: flex;
             align-items: center;
@@ -71,8 +71,7 @@
             white-space: nowrap;
             box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
             cursor: pointer;
-            /* Posicionamiento relativo al icono */
-             transform: translate(20px, -10px); /* Ajustar según necesidad */
+             transform: translate(20px, -10px); 
         }
 
         /* 🔹 Estilos Responsive */
@@ -80,11 +79,11 @@
             .place-label {
                 font-size: 12px;
                 padding: 2px 6px;
-                 transform: translate(18px, -8px); /* Ajustar para pantallas pequeñas */
+                 transform: translate(18px, -8px); 
             }
             .place-icon {
-                width: 35px;
-                height: 35px;
+                width: 30px;
+                height: 30px;
             }
             .place-icon img {
                 width: 22px;
@@ -162,21 +161,18 @@
     <script>
         // --- Variables Globales ---
         let map;
-        let userMarker = null; // Se inicializará como null
+        let userMarker = null; 
         let directionsService;
         let directionsRenderer;
         let userLocation = null; // { lat: number, lng: number }
-        let navigating = false; // Estado de navegación activa
-        let watchId = null; // ID del watcher de geolocalización
+        let navigating = false; 
+        let watchId = null;
 
-        let currentRoute = null; // Almacena el objeto de ruta actual (DirectionsResult.routes[0])
-        let currentStepIndex = 0; // Índice del paso actual en la ruta
-        let ultimaCoordenada = null; // Guarda el destino para recalcular
+        let currentRoute = null; 
 
         // --- Constantes ---
-        const STEP_END_THRESHOLD = 25; // Metros de proximidad para considerar completado un paso
-        const searchCooldown = 500; // Milisegundos de espera entre búsquedas
-        const DEFAULT_LOCATION = { lat: 4.316583, lng: -74.7727809 }; // Ubicación por defecto (Girardot aprox)
+        const searchCooldown = 500; 
+        const DEFAULT_LOCATION = { lat: 4.316583, lng: -74.7727809 }; 
 
 
         // --- Variables de UI ---
@@ -239,12 +235,10 @@
                 map = new google.maps.Map(document.getElementById("map"), {
                     zoom: 15,
                     center: DEFAULT_LOCATION,
-                    //mapTypeId: "satellite", // O 'roadmap'
                     streetViewControl: false,
-                    mapTypeControl: false, // Ocultar selector de tipo de mapa
+                    mapTypeControl: false,
                     zoomControl: true,
                     fullscreenControl: false,
-                    //styles: [{ featureType: "poi", stylers: [{ visibility: "off" }] }], // Ocultar Puntos de Interés
                     mapId: 'dca8e9ef523bf712', 
                 });
 
@@ -283,8 +277,9 @@
         // --- Manejo de Errores de Geolocalización ---
         function handleLocationError(error = null) {
             let message = "Error desconocido de geolocalización.";
+            
             if (error) {
-                 switch (error.code) {
+                switch (error.code) {
                     case error.PERMISSION_DENIED:
                         message = "Permiso de ubicación denegado.";
                         break;
@@ -295,17 +290,25 @@
                         message = "Se agotó el tiempo para obtener la ubicación.";
                         break;
                 }
-                 console.error("Error de Geolocalización:", error.message);
+                console.error("Error de Geolocalización:", error.message);
             } else if (!navigator.geolocation) {
-                 message = "Tu navegador no soporta geolocalización.";
+                message = "Tu navegador no soporta geolocalización.";
             }
-             alert(message + " Funcionalidades limitadas.");
-            // Podría centrar el mapa en DEFAULT_LOCATION si userLocation es null
-             if (!userLocation) {
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Problema con la ubicación',
+                text: message + " Algunas funcionalidades estarán limitadas.",
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#3085d6'
+            });
+
+            if (!userLocation) {
                 map.setCenter(DEFAULT_LOCATION);
-                map.setZoom(12); // Alejar un poco si no hay ubicación
-             }
+                map.setZoom(12); 
+            }
         }
+
 
         // --- Actualización de Ubicación del Usuario ---
         function updateUserLocation(position) {
@@ -323,7 +326,6 @@
                 map.setHeading(heading);
             }
 
-    
         }
 
         // --- Crear/Actualizar Marcador de Usuario (Flecha Rotatoria) ---
@@ -333,13 +335,10 @@
             const rotation = deviceHeading !== null && !isNaN(deviceHeading) ? deviceHeading : currentMapHeading; // Usar heading del dispositivo si existe, si no, el del mapa
 
             const icon = {
-                // path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW, // Flecha predefinida (alternativa)
-                url: 'arrow.png', // <-- ¡ASEGÚRATE DE QUE ESTA RUTA SEA CORRECTA!
-                scaledSize: new google.maps.Size(35, 35), // Tamaño del icono
-                origin: new google.maps.Point(0, 0), // Origen de la imagen
-                anchor: new google.maps.Point(17.5, 17.5), // Punto de anclaje (centro)
-                // ¡IMPORTANTE! La rotación del ICONO sigue la orientación del dispositivo (o del mapa si no hay heading)
-
+                url: 'arrow.png', 
+                scaledSize: new google.maps.Size(35, 35),
+                origin: new google.maps.Point(0, 0), 
+                anchor: new google.maps.Point(17.5, 17.5), 
                 rotation: rotation
             };
 
@@ -352,7 +351,6 @@
                 });
             } else {
                 userMarker.setPosition(location);
-                // Actualizar solo el icono para cambiar la rotación de la flecha
                 userMarker.setIcon(icon);
             }
         }
@@ -361,9 +359,8 @@
         // --- Gestión de Lugares (Marcadores Personalizados) ---
         async function addPlacesToMap() {
             try {
-                const places = await buscarUbicaciones('@'); // Cargar todos al inicio
+                const places = await buscarUbicaciones('@');
 
-                // Limpiar marcadores anteriores (si se recarga)
                 clearPlacesMarkers();
 
                 places.forEach(lugar => {
@@ -371,7 +368,7 @@
 
                      if (isNaN(position.lat) || isNaN(position.lng)) {
                         console.warn(`Coordenadas inválidas para lugar ${lugar.id}:`, lugar.latitud, lugar.longitud);
-                        return; // Saltar este lugar
+                        return; 
                      }
 
                     // Marcador base transparente (ancla para InfoWindow)
@@ -428,12 +425,11 @@
                         if (!projection) return; // Asegurarse que la proyección existe
                         const pos = projection.fromLatLngToDivPixel(marcador.getPosition());
                         if (pos) {
-                             // Aplicar estilos de posición aquí directamente
-                             divIcon.style.left = `${pos.x}px`;
-                             divIcon.style.top = `${pos.y}px`;
-                             // El transform del label ya está en el CSS
-                             divLabel.style.left = `${pos.x}px`;
-                             divLabel.style.top = `${pos.y}px`;
+ 
+                            divIcon.style.left = `${pos.x}px`;
+                            divIcon.style.top = `${pos.y}px`;
+                            divLabel.style.left = `${pos.x}px`;
+                            divLabel.style.top = `${pos.y}px`;
 
                         }
                     };
@@ -510,11 +506,7 @@
                     lng: Number(ubicacion.longitud)
                 };
 
-                 // Centrar en el destino ANTES de calcular para que preserveViewport funcione desde esa vista
-                 // map.setCenter(targetLocation);
-                 // map.setZoom(16); // Zoom razonable al destino
-
-                 calculateRoute(targetLocation);
+                calculateRoute(targetLocation);
 
             } catch (error) {
                  console.error("Error buscando o calculando ruta para el lugar:", error);
@@ -529,30 +521,21 @@
             }
 
             directionsRenderer.setDirections({ routes: [] });
-
-
-            ultimaCoordenada = targetLocation; // Guardar destino para recalculos
-            initialCheckDone = false; // Reiniciar chequeo de desvío para la nueva ruta
-            currentStepIndex = 0; // Reiniciar pasos
-            currentRoute = null; // Limpiar ruta anterior
-
-             // Mostrar un indicador de carga si se desea
-             // Swal.showLoading();
+         
+            currentRoute = null; 
 
             directionsService.route({
                 origin: userLocation,
                 destination: targetLocation,
                 travelMode: google.maps.TravelMode.DRIVING,
-                provideRouteAlternatives: false // Generalmente no necesitamos alternativas para la navegación directa
+                provideRouteAlternatives: false 
             })
             .then((result) => {
-                // Swal.close(); // Ocultar indicador de carga
+               
                  if (result.routes && result.routes.length > 0) {
                     directionsRenderer.setDirections(result);
                     currentRoute = result.routes[0];
                    
-
-                    // Cerrar modal de búsqueda si estaba abierto
                     if (modalInstanceBusq) {
                         modalInstanceBusq.hide();
                     }
@@ -584,14 +567,14 @@
                 return;
             }
             if (!userLocation) {
-                 alert("Necesitamos tu ubicación para iniciar la navegación.");
+                alert("Necesitamos tu ubicación para iniciar la navegación.");
                  return;
             }
 
             console.log("Iniciando navegación...");
             navigating = true;
             initialCheckDone = false; // Permitir chequeo de desvío inicial
-            currentStepIndex = 0; // Empezar desde el primer paso
+           
 
             // Actualizar UI
             document.getElementById("iniciarRuta").classList.add("hidden");
@@ -608,7 +591,7 @@
              // Si watchPosition no estaba activo, asegurarse de activarlo
              // (Normalmente ya debería estar activo desde initMap)
              if (!watchId && navigator.geolocation) {
-                 console.warn("WatchPosition no estaba activo, reiniciando...");
+                console.warn("WatchPosition no estaba activo, reiniciando...");
                 watchId = navigator.geolocation.watchPosition(
                     updateUserLocation,
                     handleLocationError,
@@ -620,11 +603,6 @@
         function stopNavigation() {
             console.log("Deteniendo navegación...");
             navigating = false;
-        
-
-            // Limpiar estado
-            // currentRoute = null; // No limpiar la ruta, podría querer volver a iniciarla
-            currentStepIndex = 0;
 
             // Resetear vista del mapa
             map.setTilt(0);
@@ -635,55 +613,12 @@
             currentRoute = null; // Limpiar datos de ruta si se limpia del mapa
 
 
-        
-
             // Actualizar UI
             document.getElementById("iniciarRuta").classList.remove("hidden");
             document.getElementById("buscar").classList.remove("hidden");
             document.getElementById("salirRuta").classList.add("hidden");
             document.body.classList.remove('navigating');
         }
-
-        // function checkIfUserDeviates() {
-        //     if (!navigating || !currentRoute || !routePath || routePath.length === 0 || !userLocation) {
-        //          return; // No hacer nada si no se está navegando o faltan datos
-        //     }
-
-        //     let nearestDistance = Infinity;
-        //      try {
-        //         const currentLatLng = new google.maps.LatLng(userLocation.lat, userLocation.lng);
-        //         // Calcular la distancia al punto más cercano en la ruta (overview_path)
-        //          nearestDistance = routePath.reduce((minDist, point) => {
-        //              // Asegurarse que 'point' es un LatLng (puede venir como objeto literal a veces)
-        //             const routePoint = (typeof point.lat === 'function') ? point : new google.maps.LatLng(point.lat, point.lng);
-        //             let dist = google.maps.geometry.spherical.computeDistanceBetween(currentLatLng, routePoint);
-        //             return Math.min(minDist, dist);
-        //         }, Infinity);
-
-        //      } catch(e) {
-        //         console.error("Error calculando distancia para desvío:", e);
-        //         return; // Salir si hay error en cálculo
-        //      }
-
-
-        //      // Lógica de chequeo inicial (evita recalcular si el usuario empieza lejos)
-        //      if (!initialCheckDone) {
-        //         console.log(`Distancia inicial a la ruta: ${nearestDistance.toFixed(1)}m`);
-        //         // Considerar que está en ruta si está razonablemente cerca
-        //         if (nearestDistance < deviationThreshold * 1.5) { // Un poco más de margen al inicio
-        //             initialCheckDone = true;
-        //             console.log("Usuario detectado cerca de la ruta inicial.");
-        //         }
-        //         return; // No recalcular en el primer chequeo fallido
-        //     }
-
-        //      // Si se ha desviado MÁS ALLÁ del umbral DESPUÉS del chequeo inicial
-        //      if (nearestDistance > deviationThreshold) {
-        //          console.warn(`¡Desvío detectado! Distancia: ${nearestDistance.toFixed(1)}m > ${deviationThreshold}m. Recalculando...`);
-        //          initialCheckDone = false; // Forzar un nuevo chequeo inicial tras recalcular
-        //          calculateRoute(ultimaCoordenada); // Recalcular hacia el mismo destino final
-        //     }
-        // }
 
         function centerMap() {
             if (userLocation) {
@@ -752,7 +687,7 @@
                 }
 
                 const images = data.imagenes;
-                mainImage.src = images[0].url || ""; // Primera imagen como principal
+                mainImage.src = images[0].url || ""; 
 
                 // Limpiar contenedor antes de añadir nuevas miniaturas
                 thumbnailContainer.innerHTML = "";
