@@ -240,13 +240,12 @@
                     zoom: 15,
                     center: DEFAULT_LOCATION,
                     //mapTypeId: "satellite", // O 'roadmap'
-                    tilt: 0, // Inicia sin inclinación
                     streetViewControl: false,
                     mapTypeControl: false, // Ocultar selector de tipo de mapa
                     zoomControl: true,
                     fullscreenControl: false,
                     //styles: [{ featureType: "poi", stylers: [{ visibility: "off" }] }], // Ocultar Puntos de Interés
-                    mapId: 'dca8e9ef523bf712', // Opcional: Tu Map ID si usas Cloud-based styling
+                    mapId: 'dca8e9ef523bf712', 
                 });
 
                 directionsService = new google.maps.DirectionsService();
@@ -266,7 +265,7 @@
                     watchId = navigator.geolocation.watchPosition(
                         updateUserLocation,
                         handleLocationError,
-                        { enableHighAccuracy: true, maximumAge: 2500, timeout: 5000 } // Ajustar timeouts si es necesario
+                        { enableHighAccuracy: true, maximumAge: 500, timeout: 5000 } // Ajustar timeouts si es necesario
                     );
                 } else {
                     handleLocationError(); // Llama sin argumento para indicar no soporte
@@ -310,43 +309,21 @@
 
         // --- Actualización de Ubicación del Usuario ---
         function updateUserLocation(position) {
-            userLocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                console.log('dfjfjddjf');
+ 
+            userLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+            if (!navigating || !currentRoute || typeof google.maps.geometry === 'undefined') return; 
+
+            const heading = position.coords.heading; 
                 
+            createUserMarker(userLocation, heading);
+            
+            map.moveCamera({ center: userLocation }); 
 
-            const currentLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude); // Usar LatLng object
-            const deviceHeading = position.coords.heading; // Heading del dispositivo
-                console.log('jsdhjdsh');
-                
-            // 1. Actualizar marcador de usuario (posición y ROTACIÓN DEL ICONO según dispositivo)
-            createUserMarker(currentLocation, deviceHeading);
-            if (!navigating || !currentRoute || typeof google.maps.geometry === 'undefined') return; // Salir si no estamos navegando, no hay ruta, o no cargó geometry
-
-
-            // 2. Centrar mapa en el usuario
-            map.moveCamera({ center: currentLocation }); // Usar moveCamera es más suave que setCenter
-
-            // 3. Lógica de Orientación del MAPA basada en la RUTA
-            const steps = currentRoute.legs[0].steps;
-            if (!steps || steps.length === 0) return; // No hay pasos para seguir
-
-            // Verificar si hemos avanzado al siguiente paso
-            if (currentStepIndex < steps.length - 1) { // Asegurarse de que no es el último paso
-                const endOfCurrentStep = steps[currentStepIndex].end_location;
-                const distanceToEnd = google.maps.geometry.spherical.computeDistanceBetween(currentLocation, endOfCurrentStep);
-
-                // Si estamos cerca del final del paso actual, avanzamos al siguiente
-                if (distanceToEnd < STEP_END_THRESHOLD) {
-                    currentStepIndex++;
-                    console.log(`Avanzando al paso ${currentStepIndex}`);
-                    setMapHeadingBasedOnStep(currentStepIndex); // Ajustar orientación del MAPA al nuevo paso
-                }
-                // Opcional: Si no estamos cerca del final, podríamos verificar si nos desviamos mucho
-                // y potencialmente reajustar al paso más cercano, pero eso es más complejo (manejo off-route).
+            if (heading !== null && !isNaN(heading)) {
+                map.setHeading(heading);
             }
+
+    
         }
 
         // --- Crear/Actualizar Marcador de Usuario (Flecha Rotatoria) ---
@@ -380,40 +357,6 @@
             }
         }
 
-        // --- Ajustar Heading del Mapa basado en un Paso de la Ruta ---
-        function setMapHeadingBasedOnStep(stepIndex) {
-            if (!currentRoute || !currentRoute.legs || !currentRoute.legs[0].steps || stepIndex >= currentRoute.legs[0].steps.length) {
-                console.warn(`Índice de paso ${stepIndex} inválido o ruta no disponible.`);
-                return;
-            }
-
-            const step = currentRoute.legs[0].steps[stepIndex];
-
-            // Necesitamos al menos dos puntos para calcular un heading.
-            // Usaremos el start_location y end_location del paso actual.
-            // Si un paso tiene una polyline detallada, podríamos usar los primeros puntos de esa polyline.
-            let stepHeading = 0;
-            if (step.path && step.path.length >= 2) {
-                // Usar los primeros dos puntos del path del paso si existen
-                stepHeading = google.maps.geometry.spherical.computeHeading(step.path[0], step.path[1]);
-            } else {
-                // Usar inicio y fin del paso como fallback (menos preciso para pasos curvos)
-                stepHeading = google.maps.geometry.spherical.computeHeading(step.start_location, step.end_location);
-            }
-
-
-            if (!isNaN(stepHeading)) {
-                // Solo aplicar si el heading es válido y diferente al anterior (para evitar llamadas innecesarias)
-                // Podríamos añadir un umbral de diferencia si quisiéramos aún menos actualizaciones
-                // if (Math.abs(stepHeading - lastMapHeading) > 5) { // Ejemplo: solo si cambia más de 5 grados
-                    console.log(`Ajustando heading del mapa al paso ${stepIndex}: ${stepHeading.toFixed(1)}°`);
-                    map.setHeading(stepHeading);
-                    lastMapHeading = stepHeading; // Guardar el último heading aplicado
-                // }
-            } else {
-                console.warn(`No se pudo calcular el heading para el paso ${stepIndex}.`);
-            }
-}
 
         // --- Gestión de Lugares (Marcadores Personalizados) ---
         async function addPlacesToMap() {
@@ -661,8 +604,6 @@
             map.setTilt(45); // Inclinar mapa
             map.setCenter(userLocation); // Centrar en usuario
 
-            // Orientar según el primer paso
-            setMapHeadingBasedOnStep(0);
 
              // Si watchPosition no estaba activo, asegurarse de activarlo
              // (Normalmente ya debería estar activo desde initMap)
