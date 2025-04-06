@@ -171,7 +171,6 @@
 
         let currentRoute = null; // Almacena el objeto de ruta actual (DirectionsResult.routes[0])
         let currentStepIndex = 0; // Índice del paso actual en la ruta
-        let routePath = []; // Array de LatLng para detección de desvío
         let ultimaCoordenada = null; // Guarda el destino para recalcular
 
         // --- Constantes ---
@@ -315,14 +314,17 @@
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
                 };
-           
-            if (!isNavigating || !currentRoute || typeof google.maps.geometry === 'undefined') return; // Salir si no estamos navegando, no hay ruta, o no cargó geometry
+                console.log('dfjfjddjf');
+                
 
             const currentLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude); // Usar LatLng object
             const deviceHeading = position.coords.heading; // Heading del dispositivo
-
+                console.log('jsdhjdsh');
+                
             // 1. Actualizar marcador de usuario (posición y ROTACIÓN DEL ICONO según dispositivo)
             createUserMarker(currentLocation, deviceHeading);
+            if (!navigating || !currentRoute || typeof google.maps.geometry === 'undefined') return; // Salir si no estamos navegando, no hay ruta, o no cargó geometry
+
 
             // 2. Centrar mapa en el usuario
             map.moveCamera({ center: currentLocation }); // Usar moveCamera es más suave que setCenter
@@ -361,7 +363,7 @@
                 anchor: new google.maps.Point(17.5, 17.5), // Punto de anclaje (centro)
                 // ¡IMPORTANTE! La rotación del ICONO sigue la orientación del dispositivo (o del mapa si no hay heading)
 
-            rotation: rotation
+                rotation: rotation
             };
 
             if (!userMarker) {
@@ -590,7 +592,6 @@
             initialCheckDone = false; // Reiniciar chequeo de desvío para la nueva ruta
             currentStepIndex = 0; // Reiniciar pasos
             currentRoute = null; // Limpiar ruta anterior
-            routePath = []; // Limpiar path de desvío
 
              // Mostrar un indicador de carga si se desea
              // Swal.showLoading();
@@ -606,7 +607,7 @@
                  if (result.routes && result.routes.length > 0) {
                     directionsRenderer.setDirections(result);
                     currentRoute = result.routes[0];
-                    routePath = currentRoute.overview_path || []; // Guardar el path para desvíos
+                   
 
                     // Cerrar modal de búsqueda si estaba abierto
                     if (modalInstanceBusq) {
