@@ -175,7 +175,6 @@
         let ultimaCoordenada = null; // Guarda el destino para recalcular
 
         // --- Constantes ---
-        const deviationThreshold = 50; // Metros máximos de desvío permitidos
         const STEP_END_THRESHOLD = 25; // Metros de proximidad para considerar completado un paso
         const searchCooldown = 500; // Milisegundos de espera entre búsquedas
         const DEFAULT_LOCATION = { lat: 4.316583, lng: -74.7727809 }; // Ubicación por defecto (Girardot aprox)
@@ -258,7 +257,7 @@
                     polylineOptions: {
                         strokeColor: '#4285F4', // Color de la ruta
                         strokeWeight: 6,       // Grosor de la ruta
-                        strokeOpacity: 0.8     // Opacidad
+                        strokeOpacity: 1     // Opacidad
                     }
                 });
                 directionsRenderer.setMap(map);
@@ -312,110 +311,104 @@
 
         // --- Actualización de Ubicación del Usuario ---
         function updateUserLocation(position) {
-            try {
-                userLocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                const deviceHeading = position.coords.heading; // Puede ser null
 
-                 // 1. Actualizar marcador de usuario (posición y rotación)
-                createUserMarker(userLocation, deviceHeading);
+           
+            if (!isNavigating || !currentRoute || typeof google.maps.geometry === 'undefined') return; // Salir si no estamos navegando, no hay ruta, o no cargó geometry
 
-                // 2. Lógica durante la navegación activa
-                if (navigating && currentRoute) {
-                    map.moveCamera({ center: userLocation }); // Centrar suavemente
+            const currentLocation = new google.maps.LatLng(position.coords.latitude, position.coords.longitude); // Usar LatLng object
+            const deviceHeading = position.coords.heading; // Heading del dispositivo
 
-                    // 3. Orientación del mapa según el paso de la ruta
-                    const steps = currentRoute.legs[0].steps;
-                    if (steps && currentStepIndex < steps.length) {
-                         const endOfCurrentStep = steps[currentStepIndex].end_location;
-                        if (endOfCurrentStep && typeof endOfCurrentStep.lat === 'function') {
-                            // Calcular distancia al final del paso actual
-                            try {
-                                const distanceToEnd = google.maps.geometry.spherical.computeDistanceBetween(
-                                    new google.maps.LatLng(userLocation.lat, userLocation.lng),
-                                    endOfCurrentStep
-                                );
+            // 1. Actualizar marcador de usuario (posición y ROTACIÓN DEL ICONO según dispositivo)
+            createUserMarker(currentLocation, deviceHeading);
 
-                                // Si está cerca del final, avanzar al siguiente paso y reorientar
-                                if (distanceToEnd < STEP_END_THRESHOLD && currentStepIndex < steps.length - 1) {
-                                    currentStepIndex++;
-                                    console.log(`Avance detectado: Pasando al paso ${currentStepIndex + 1}/${steps.length}`);
-                                    setMapHeadingBasedOnStep(currentStepIndex);
-                                }
-                            } catch (geoError) {
-                                 console.error("Error calculando distancia al fin del paso:", geoError);
-                            }
-                        }
-                    }
-                     // 4. Verificar desvío de la ruta general
-                    checkIfUserDeviates();
-                } 
+            // 2. Centrar mapa en el usuario
+            map.moveCamera({ center: currentLocation }); // Usar moveCamera es más suave que setCenter
 
-             } catch (error) {
-                 console.error("Error en updateUserLocation:", error);
-             }
+            // 3. Lógica de Orientación del MAPA basada en la RUTA
+            const steps = currentRoute.legs[0].steps;
+            if (!steps || steps.length === 0) return; // No hay pasos para seguir
+
+            // Verificar si hemos avanzado al siguiente paso
+            if (currentStepIndex < steps.length - 1) { // Asegurarse de que no es el último paso
+                const endOfCurrentStep = steps[currentStepIndex].end_location;
+                const distanceToEnd = google.maps.geometry.spherical.computeDistanceBetween(currentLocation, endOfCurrentStep);
+
+                // Si estamos cerca del final del paso actual, avanzamos al siguiente
+                if (distanceToEnd < STEP_END_THRESHOLD) {
+                    currentStepIndex++;
+                    console.log(`Avanzando al paso ${currentStepIndex}`);
+                    setMapHeadingBasedOnStep(currentStepIndex); // Ajustar orientación del MAPA al nuevo paso
+                }
+                // Opcional: Si no estamos cerca del final, podríamos verificar si nos desviamos mucho
+                // y potencialmente reajustar al paso más cercano, pero eso es más complejo (manejo off-route).
+            }
         }
 
         // --- Crear/Actualizar Marcador de Usuario (Flecha Rotatoria) ---
-        function createUserMarker(location, deviceHeading = null) {
-            const rotation = (deviceHeading !== null && !isNaN(deviceHeading)) ? deviceHeading : (map ? map.getHeading() || 0 : 0);
+        function createUserMarker(location, deviceHeading  = 0) {
+
+            const currentMapHeading = map ? map.getHeading() || 0 : 0; // Obtener heading actual del mapa si existe
+            const rotation = deviceHeading !== null && !isNaN(deviceHeading) ? deviceHeading : currentMapHeading; // Usar heading del dispositivo si existe, si no, el del mapa
 
             const icon = {
+                // path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW, // Flecha predefinida (alternativa)
                 url: 'arrow.png', // <-- ¡ASEGÚRATE DE QUE ESTA RUTA SEA CORRECTA!
-                scaledSize: new google.maps.Size(35, 35),
-                origin: new google.maps.Point(0, 0),
-                anchor: new google.maps.Point(17.5, 17.5),
-                rotation: rotation // Rotación del icono según dispositivo o mapa
+                scaledSize: new google.maps.Size(35, 35), // Tamaño del icono
+                origin: new google.maps.Point(0, 0), // Origen de la imagen
+                anchor: new google.maps.Point(17.5, 17.5), // Punto de anclaje (centro)
+                // ¡IMPORTANTE! La rotación del ICONO sigue la orientación del dispositivo (o del mapa si no hay heading)
+
+            rotation: rotation
             };
 
-             if (!userMarker) {
+            if (!userMarker) {
                 userMarker = new google.maps.Marker({
                     position: location,
                     map: map,
                     icon: icon,
-                    title: "Tu ubicación",
-                    zIndex: 1000 // Asegurar que esté encima de otros elementos
+                    title: "Tu ubicación"
                 });
             } else {
                 userMarker.setPosition(location);
-                userMarker.setIcon(icon); // Actualizar icono para rotación
+                // Actualizar solo el icono para cambiar la rotación de la flecha
+                userMarker.setIcon(icon);
             }
         }
 
         // --- Ajustar Heading del Mapa basado en un Paso de la Ruta ---
         function setMapHeadingBasedOnStep(stepIndex) {
             if (!currentRoute || !currentRoute.legs || !currentRoute.legs[0].steps || stepIndex >= currentRoute.legs[0].steps.length) {
-                console.warn(`Índice de paso ${stepIndex} inválido o ruta no disponible para heading.`);
+                console.warn(`Índice de paso ${stepIndex} inválido o ruta no disponible.`);
                 return;
             }
 
             const step = currentRoute.legs[0].steps[stepIndex];
-            let stepHeading = NaN;
 
-            try {
-                // Intentar calcular heading desde el path del paso (más preciso)
-                 if (step.path && step.path.length >= 2 && step.path[0] && typeof step.path[0].lat === 'function' && step.path[1] && typeof step.path[1].lat === 'function') {
-                    stepHeading = google.maps.geometry.spherical.computeHeading(step.path[0], step.path[1]);
-                 }
-                 // Fallback: usar inicio y fin del paso
-                 else if (step.start_location && typeof step.start_location.lat === 'function' && step.end_location && typeof step.end_location.lat === 'function') {
-                    stepHeading = google.maps.geometry.spherical.computeHeading(step.start_location, step.end_location);
-                 }
-             } catch (e) {
-                 console.error(`Error calculando heading para el paso ${stepIndex}:`, e);
-             }
+            // Necesitamos al menos dos puntos para calcular un heading.
+            // Usaremos el start_location y end_location del paso actual.
+            // Si un paso tiene una polyline detallada, podríamos usar los primeros puntos de esa polyline.
+            let stepHeading = 0;
+            if (step.path && step.path.length >= 2) {
+                // Usar los primeros dos puntos del path del paso si existen
+                stepHeading = google.maps.geometry.spherical.computeHeading(step.path[0], step.path[1]);
+            } else {
+                // Usar inicio y fin del paso como fallback (menos preciso para pasos curvos)
+                stepHeading = google.maps.geometry.spherical.computeHeading(step.start_location, step.end_location);
+            }
+
 
             if (!isNaN(stepHeading)) {
-                console.log(`Ajustando heading del mapa al paso ${stepIndex + 1}: ${stepHeading.toFixed(1)}°`);
-                map.moveCamera({ heading: stepHeading }); // Usar moveCamera para una transición más suave si es posible
-                // map.setHeading(stepHeading); // Alternativa directa
+                // Solo aplicar si el heading es válido y diferente al anterior (para evitar llamadas innecesarias)
+                // Podríamos añadir un umbral de diferencia si quisiéramos aún menos actualizaciones
+                // if (Math.abs(stepHeading - lastMapHeading) > 5) { // Ejemplo: solo si cambia más de 5 grados
+                    console.log(`Ajustando heading del mapa al paso ${stepIndex}: ${stepHeading.toFixed(1)}°`);
+                    map.setHeading(stepHeading);
+                    lastMapHeading = stepHeading; // Guardar el último heading aplicado
+                // }
             } else {
-                console.warn(`No se pudo calcular un heading válido para el paso ${stepIndex + 1}.`);
+                console.warn(`No se pudo calcular el heading para el paso ${stepIndex}.`);
             }
-        }
-
+}
 
         // --- Gestión de Lugares (Marcadores Personalizados) ---
         async function addPlacesToMap() {
@@ -706,46 +699,46 @@
             document.body.classList.remove('navigating');
         }
 
-        function checkIfUserDeviates() {
-            if (!navigating || !currentRoute || !routePath || routePath.length === 0 || !userLocation) {
-                 return; // No hacer nada si no se está navegando o faltan datos
-            }
+        // function checkIfUserDeviates() {
+        //     if (!navigating || !currentRoute || !routePath || routePath.length === 0 || !userLocation) {
+        //          return; // No hacer nada si no se está navegando o faltan datos
+        //     }
 
-            let nearestDistance = Infinity;
-             try {
-                const currentLatLng = new google.maps.LatLng(userLocation.lat, userLocation.lng);
-                // Calcular la distancia al punto más cercano en la ruta (overview_path)
-                 nearestDistance = routePath.reduce((minDist, point) => {
-                     // Asegurarse que 'point' es un LatLng (puede venir como objeto literal a veces)
-                    const routePoint = (typeof point.lat === 'function') ? point : new google.maps.LatLng(point.lat, point.lng);
-                    let dist = google.maps.geometry.spherical.computeDistanceBetween(currentLatLng, routePoint);
-                    return Math.min(minDist, dist);
-                }, Infinity);
+        //     let nearestDistance = Infinity;
+        //      try {
+        //         const currentLatLng = new google.maps.LatLng(userLocation.lat, userLocation.lng);
+        //         // Calcular la distancia al punto más cercano en la ruta (overview_path)
+        //          nearestDistance = routePath.reduce((minDist, point) => {
+        //              // Asegurarse que 'point' es un LatLng (puede venir como objeto literal a veces)
+        //             const routePoint = (typeof point.lat === 'function') ? point : new google.maps.LatLng(point.lat, point.lng);
+        //             let dist = google.maps.geometry.spherical.computeDistanceBetween(currentLatLng, routePoint);
+        //             return Math.min(minDist, dist);
+        //         }, Infinity);
 
-             } catch(e) {
-                console.error("Error calculando distancia para desvío:", e);
-                return; // Salir si hay error en cálculo
-             }
+        //      } catch(e) {
+        //         console.error("Error calculando distancia para desvío:", e);
+        //         return; // Salir si hay error en cálculo
+        //      }
 
 
-             // Lógica de chequeo inicial (evita recalcular si el usuario empieza lejos)
-             if (!initialCheckDone) {
-                console.log(`Distancia inicial a la ruta: ${nearestDistance.toFixed(1)}m`);
-                // Considerar que está en ruta si está razonablemente cerca
-                if (nearestDistance < deviationThreshold * 1.5) { // Un poco más de margen al inicio
-                    initialCheckDone = true;
-                    console.log("Usuario detectado cerca de la ruta inicial.");
-                }
-                return; // No recalcular en el primer chequeo fallido
-            }
+        //      // Lógica de chequeo inicial (evita recalcular si el usuario empieza lejos)
+        //      if (!initialCheckDone) {
+        //         console.log(`Distancia inicial a la ruta: ${nearestDistance.toFixed(1)}m`);
+        //         // Considerar que está en ruta si está razonablemente cerca
+        //         if (nearestDistance < deviationThreshold * 1.5) { // Un poco más de margen al inicio
+        //             initialCheckDone = true;
+        //             console.log("Usuario detectado cerca de la ruta inicial.");
+        //         }
+        //         return; // No recalcular en el primer chequeo fallido
+        //     }
 
-             // Si se ha desviado MÁS ALLÁ del umbral DESPUÉS del chequeo inicial
-             if (nearestDistance > deviationThreshold) {
-                 console.warn(`¡Desvío detectado! Distancia: ${nearestDistance.toFixed(1)}m > ${deviationThreshold}m. Recalculando...`);
-                 initialCheckDone = false; // Forzar un nuevo chequeo inicial tras recalcular
-                 calculateRoute(ultimaCoordenada); // Recalcular hacia el mismo destino final
-            }
-        }
+        //      // Si se ha desviado MÁS ALLÁ del umbral DESPUÉS del chequeo inicial
+        //      if (nearestDistance > deviationThreshold) {
+        //          console.warn(`¡Desvío detectado! Distancia: ${nearestDistance.toFixed(1)}m > ${deviationThreshold}m. Recalculando...`);
+        //          initialCheckDone = false; // Forzar un nuevo chequeo inicial tras recalcular
+        //          calculateRoute(ultimaCoordenada); // Recalcular hacia el mismo destino final
+        //     }
+        // }
 
         function centerMap() {
             if (userLocation) {
