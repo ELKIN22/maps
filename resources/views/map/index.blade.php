@@ -175,12 +175,11 @@
         let ultimaCoordenada = null; // Guarda el destino para recalcular
 
         // --- Constantes ---
-        const deviationThreshold = 30; // Metros máximos de desvío permitidos
+        const deviationThreshold = 50; // Metros máximos de desvío permitidos
         const STEP_END_THRESHOLD = 25; // Metros de proximidad para considerar completado un paso
         const searchCooldown = 500; // Milisegundos de espera entre búsquedas
         const DEFAULT_LOCATION = { lat: 4.316583, lng: -74.7727809 }; // Ubicación por defecto (Girardot aprox)
-        // const MIN_ZOOM_PLACES = 15; // Si se reactiva visibilidad por zoom
-        // const MAX_ZOOM_PLACES = 20;
+
 
         // --- Variables de UI ---
         let modalInstanceBusq;
@@ -269,7 +268,7 @@
                     watchId = navigator.geolocation.watchPosition(
                         updateUserLocation,
                         handleLocationError,
-                        { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 } // Ajustar timeouts si es necesario
+                        { enableHighAccuracy: true, maximumAge: 2500, timeout: 5000 } // Ajustar timeouts si es necesario
                     );
                 } else {
                     handleLocationError(); // Llama sin argumento para indicar no soporte
@@ -588,6 +587,9 @@
                 return;
             }
 
+            directionsRenderer.setDirections({ routes: [] });
+
+
             ultimaCoordenada = targetLocation; // Guardar destino para recalculos
             initialCheckDone = false; // Reiniciar chequeo de desvío para la nueva ruta
             currentStepIndex = 0; // Reiniciar pasos
@@ -680,11 +682,7 @@
         function stopNavigation() {
             console.log("Deteniendo navegación...");
             navigating = false;
-            // clearWatch ya no es necesario si usamos el watchId global de initMap
-            // if (watchId !== null && navigator.geolocation) {
-            //     navigator.geolocation.clearWatch(watchId);
-            //     watchId = null;
-            // }
+        
 
             // Limpiar estado
             // currentRoute = null; // No limpiar la ruta, podría querer volver a iniciarla
@@ -695,14 +693,11 @@
             map.setHeading(0);
 
             // Opcional: limpiar la línea de la ruta del mapa
-            // directionsRenderer.setDirections({ routes: [] });
-            // currentRoute = null; // Limpiar datos de ruta si se limpia del mapa
+            directionsRenderer.setDirections({ routes: [] });
+            currentRoute = null; // Limpiar datos de ruta si se limpia del mapa
 
 
-             // Opcional: Ajustar zoom para ver la ruta completa si aún existe
-            // if (currentRoute) {
-            //     map.fitBounds(currentRoute.bounds);
-            // }
+        
 
             // Actualizar UI
             document.getElementById("iniciarRuta").classList.remove("hidden");
@@ -722,7 +717,7 @@
                 // Calcular la distancia al punto más cercano en la ruta (overview_path)
                  nearestDistance = routePath.reduce((minDist, point) => {
                      // Asegurarse que 'point' es un LatLng (puede venir como objeto literal a veces)
-                     const routePoint = (typeof point.lat === 'function') ? point : new google.maps.LatLng(point.lat, point.lng);
+                    const routePoint = (typeof point.lat === 'function') ? point : new google.maps.LatLng(point.lat, point.lng);
                     let dist = google.maps.geometry.spherical.computeDistanceBetween(currentLatLng, routePoint);
                     return Math.min(minDist, dist);
                 }, Infinity);
