@@ -1,28 +1,28 @@
 <!DOCTYPE html>
-<html class="h-full" data-theme="true" data-theme-mode="light" lang="en">
+<html class="h-full" data-theme="true" data-theme-mode="light" lang="es">
 
 <head>
     <base href="../../">
     <title>
-        Metronic - Tailwind CSS
+        Aplicación de Mapa Mejorada
     </title>
     <meta charset="utf-8" />
     <meta content="follow, index" name="robots" />
     <link href="https://keenthemes.com/metronic" rel="canonical" />
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
-    <meta content="" name="description" />
+    <meta content="Aplicación web con Google Maps, navegación mejorada, búsqueda y galería." name="description" />
     <meta content="@keenthemes" name="twitter:site" />
     <meta content="@keenthemes" name="twitter:creator" />
     <meta content="summary_large_image" name="twitter:card" />
-    <meta content="Metronic - Tailwind CSS " name="twitter:title" />
-    <meta content="" name="twitter:description" />
+    <meta content="Aplicación de Mapa Mejorada" name="twitter:title" />
+    <meta content="Aplicación web con Google Maps, navegación mejorada, búsqueda y galería." name="twitter:description" />
     <meta content="assets/media/app/og-image.png" name="twitter:image" />
     <meta content="https://keenthemes.com/metronic" property="og:url" />
-    <meta content="en_US" property="og:locale" />
+    <meta content="es_CO" property="og:locale" />
     <meta content="website" property="og:type" />
     <meta content="@keenthemes" property="og:site_name" />
-    <meta content="Metronic - Tailwind CSS " property="og:title" />
-    <meta content="" property="og:description" />
+    <meta content="Aplicación de Mapa Mejorada" property="og:title" />
+    <meta content="Aplicación web con Google Maps, navegación mejorada, búsqueda y galería." property="og:description" />
     <meta content="assets/media/app/og-image.png" property="og:image" />
     <link href="assets/media/app/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180" />
     <link href="assets/media/app/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png" />
@@ -49,6 +49,8 @@
             transform: translate(-50%, -50%);
             box-shadow: 0px 2px 5px rgba(0,0,0,0.3);
             border: 2px solid white;
+            background-color: #17C653; /* Color de fondo por defecto */
+            cursor: pointer;
         }
 
         .place-icon img {
@@ -68,6 +70,9 @@
             border-radius: 4px;
             white-space: nowrap;
             box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+            /* Posicionamiento relativo al icono */
+             transform: translate(20px, -10px); /* Ajustar según necesidad */
         }
 
         /* 🔹 Estilos Responsive */
@@ -75,6 +80,7 @@
             .place-label {
                 font-size: 12px;
                 padding: 2px 6px;
+                 transform: translate(18px, -8px); /* Ajustar para pantallas pequeñas */
             }
             .place-icon {
                 width: 35px;
@@ -85,8 +91,6 @@
                 height: 22px;
             }
         }
-
-
     </style>
 </head>
 
@@ -95,369 +99,430 @@
 
     <div id="map"></div>
 
-    <button id="iniciarRuta" class="btn  btn-outline btn-primary fixed bottom-40 right-4" onclick="startNavigation()">
+    <button id="iniciarRuta" class="btn btn-outline btn-primary fixed bottom-40 right-4 z-10">
         <i class="ki-filled ki-route"></i> Iniciar Ruta
     </button>
-    <button id="buscar" class="btn btn-outline btn-success fixed bottom-28 right-4" data-modal-toggle="#modalBusqueda">
+    <button id="buscar" class="btn btn-outline btn-success fixed bottom-28 right-4 z-10" data-modal-toggle="#modalBusqueda">
         <i class="ki-outline ki-magnifier"></i> Buscar
     </button>
-     
-    <button id="centrar" class="btn  btn-outline btn-primary fixed bottom-16 right-4" onclick="centerMap()">
+    <button id="centrar" class="btn btn-outline btn-info fixed bottom-16 right-4 z-10">
         <i class="ki-filled ki-focus"></i> Centrar
     </button>
-
-    <button id="salirRuta" class="btn  btn-outline btn-danger fixed bottom-4 right-4">
+    <button id="salirRuta" class="btn btn-outline btn-danger fixed bottom-4 right-4 z-10 hidden">
         <i class="ki-filled ki-cross-circle"></i> Salir Ruta
     </button>
-  
 
     <div class="modal" data-modal="true" id="modalBusqueda">
-        <div class="modal-content   max-w-[800px] top-[10%] max-h-[80%]">
+        <div class="modal-content max-w-[800px] top-[10%] max-h-[80%]">
             <div class="modal-header">
-                <h3 class="modal-title">
-                    Buscar Ubicaciónes
-                </h3>
+                <h3 class="modal-title">Buscar Ubicaciones</h3>
                 <button class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
-                    <i class="ki-outline ki-cross">
-                    </i>
+                    <i class="ki-outline ki-cross"></i>
                 </button>
             </div>
             <div class="modal-body ">
-                <div class="pt-2.5  mb-1">
+                <div class="pt-2.5 mb-1">
                     <div class="input">
                         <i class="ki-outline ki-magnifier"></i>
-                        <input id="searchInput" placeholder="Input with icon" type="text" value="" />
+                        <input id="searchInput" placeholder="Buscar lugar..." type="text" value="" />
                     </div>
                 </div>
-                <div id="searchResults"
-                    class="px-3.5 scrollable-y border border-gray-300 rounded-md max-h-[60vh] overflow-y-auto mb-1">
-                      <!-- Aquí se generarán las tarjetas dinámicamente -->
-                </div>
-
+                <div id="searchResults" class="px-3.5 scrollable-y border border-gray-300 rounded-md max-h-[60vh] overflow-y-auto mb-1">
+                    
+            </div>
             </div>
         </div>
     </div>
 
     <div class="modal" data-modal="true" id="modalGaleria">
-        <div class="modal-content   max-w-[800px] top-[10%] max-h-[80%]">
+        <div class="modal-content max-w-[800px] top-[10%] max-h-[80%]">
             <div class="modal-header">
-                <h3 class="modal-title">
-                    Galeria 
-                </h3>
+                <h3 class="modal-title">Galería</h3>
                 <button class="btn btn-xs btn-icon btn-light" data-modal-dismiss="true">
-                    <i class="ki-outline ki-cross">
-                    </i>
+                    <i class="ki-outline ki-cross"></i>
                 </button>
             </div>
             <div class="modal-body ">
-                <div class="flex justify-center items-center  bg-gray-100">
+                <div class="flex justify-center items-center bg-gray-100 p-4">
                     <div class="grid gap-4 max-w-2xl">
-                        <!-- Imagen Principal -->
                         <div>
                             <img id="mainImage" class="h-auto w-full max-w-full rounded-lg object-cover object-center md:h-[480px]"
-                                src=""
-                                alt="" />
+                                src="" alt="Imagen principal de la galería" />
                         </div>
-
-                        <!-- Carrusel de Miniaturas -->
                         <div class="overflow-x-auto">
                             <div id="thumbnailContainer" class="flex gap-4">
-                                <!-- Las miniaturas se llenarán dinámicamente con JS -->
-                            </div>
+                                </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
     <script>
-        
+        // --- Variables Globales ---
+        let map;
+        let userMarker = null; // Se inicializará como null
+        let directionsService;
+        let directionsRenderer;
+        let userLocation = null; // { lat: number, lng: number }
+        let navigating = false; // Estado de navegación activa
+        let watchId = null; // ID del watcher de geolocalización
 
-        async function cargarGaleria(id) {
-            try {
-                const data = await obtenerUbicacion(id);
-                if (!data || !data.imagenes || !Array.isArray(data.imagenes)) {
-                    console.error("No se encontraron imágenes válidas.");
-                    return;
-                }
+        let currentRoute = null; // Almacena el objeto de ruta actual (DirectionsResult.routes[0])
+        let currentStepIndex = 0; // Índice del paso actual en la ruta
+        let routePath = []; // Array de LatLng para detección de desvío
+        let ultimaCoordenada = null; // Guarda el destino para recalcular
 
-               
+        // --- Constantes ---
+        const deviationThreshold = 30; // Metros máximos de desvío permitidos
+        const STEP_END_THRESHOLD = 25; // Metros de proximidad para considerar completado un paso
+        const searchCooldown = 500; // Milisegundos de espera entre búsquedas
+        const DEFAULT_LOCATION = { lat: 4.316583, lng: -74.7727809 }; // Ubicación por defecto (Girardot aprox)
+        // const MIN_ZOOM_PLACES = 15; // Si se reactiva visibilidad por zoom
+        // const MAX_ZOOM_PLACES = 20;
 
-                const images = data.imagenes;
-                console.log(images);
-                
-
-                const mainImage = document.getElementById("mainImage");
-                const thumbnailContainer = document.getElementById("thumbnailContainer");
-
-                // Limpiar contenedor y reiniciar imagen principal
-                thumbnailContainer.innerHTML = "";
-                mainImage.src = images[0].url || ""; // Primera imagen como principal
-
-                images.forEach((imgSrc, index) => {
-                   
-                    
-                    const thumb = document.createElement("img");
-                    thumb.src = imgSrc.url;
-                    thumb.classList = "object-cover object-center h-20 w-20 rounded-lg cursor-pointer border-2 border-transparent hover:border-green-500 transition";
-
-                    thumb.addEventListener("click", () => {
-                        mainImage.src = imgSrc.url;
-
-                        document.querySelectorAll("#thumbnailContainer img")
-                            .forEach(img => img.classList.remove("border-green-500"));
-
-                        thumb.classList.add("border-green-500");
-                    });
-
-                    thumbnailContainer.appendChild(thumb);
-                });
-
-                // Marcar la primera miniatura como seleccionada por defecto
-                if (thumbnailContainer.children[0]) {
-                    thumbnailContainer.children[0].classList.add("border-green-500");
-                }
-
-                modalInstanceGaleria.show();
-
-            } catch (error) {
-                console.error("Error al cargar la galería:", error);
-            }
-        }
-
-        
-        let map, userMarker, directionsService, directionsRenderer;
-        let userLocation = null;
-        let navigating = false;
-        const destination = {
-            lat: 4.316583,
-            lng: -74.7727809
-        };
-        let routePath = [];
-        const deviationThreshold = 30;
-
-        let lastSearchTime = 0;
-        const searchCooldown = 1000;
-
+        // --- Variables de UI ---
         let modalInstanceBusq;
+        let modalInstanceGaleria;
+        let placesMarkers = []; // Almacenar marcadores personalizados y overlays
+        let activeInfoWindow = null; // InfoWindow actualmente abierta
+        let lastSearchTime = 0;
+        let initialCheckDone = false; // Para el primer chequeo de desvío
 
-
-        const MIN_ZOOM = 15;
-        const MAX_ZOOM = 20;
-        let placesMarkers = []; // Almacenar los marcadores y overlays
-
-
-        let activeInfoWindow = null;
-
-        document.getElementById("iniciarRuta").classList.remove("hidden");
-        document.getElementById("buscar").classList.remove("hidden");
-        document.getElementById("salirRuta").classList.add("hidden");
-
-
+        // --- Inicialización de UI (Modal, Botones) ---
         document.addEventListener("DOMContentLoaded", () => {
-            KTModal.init()
-
-            // Initialzie pending modals
+            KTModal.init();
             KTModal.createInstances();
-            const modalElBusq = document.querySelector('#modalBusqueda');  
+
+            const modalElBusq = document.querySelector('#modalBusqueda');
             modalInstanceBusq = KTModal.getInstance(modalElBusq);
 
-            const modalGaleria = document.querySelector('#modalGaleria');  
+            const modalGaleria = document.querySelector('#modalGaleria');
             modalInstanceGaleria = KTModal.getInstance(modalGaleria);
 
-            modalInstanceBusq.on('show', () => {
-                realizarBusqueda();
-            });
-        });
-       
-        
-        document.getElementById('searchInput').addEventListener('input', manejarBusqueda);
-
-
-        function initMap() {
-            map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 15,
-                center: destination,
-                mapTypeId: "roadmap",
-                tilt: 45,
-                streetViewControl: false,
-                mapTypeId: "satellite",
-                styles: [{
-                    featureType: "poi", 
-                    stylers: [{
-                        visibility: "off"
-                    }]
-                }],
-            });
-
-            directionsService = new google.maps.DirectionsService();
-            directionsRenderer = new google.maps.DirectionsRenderer({
-                suppressMarkers: true
-            });
-            directionsRenderer.setMap(map);
-
-            userMarker = new google.maps.Marker({
-                position: {
-                    lat: 0,
-                    lng: 0
-                },
-                map: map,
-                title: "Tu ubicación",
-                icon: {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    scale: 8,
-                    fillColor: "#4285F4",
-                    fillOpacity: 1,
-                    strokeWeight: 2
-                }
-            });
-
-            if (navigator.geolocation) {
-                navigator.geolocation.watchPosition(updateUserLocation, () => alert("No se pudo obtener la ubicación"), {
-                    enableHighAccuracy: true,
-                    maximumAge: 3000
+            if (modalInstanceBusq) {
+                modalInstanceBusq.on('show', () => {
+                    realizarBusqueda(); // Cargar resultados al abrir
+                    document.getElementById('searchInput').focus(); // Enfocar input
                 });
             } else {
-                alert("Tu navegador no soporta geolocalización");
+                 console.error("No se pudo inicializar el modal de búsqueda");
             }
 
-            addPlacesToMap();
-        }
+             if (!modalInstanceGaleria) {
+                 console.error("No se pudo inicializar el modal de galería");
+            }
 
-        function updateUserLocation(position) {
-            
-            
-            userLocation = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-            userMarker.setPosition(userLocation);
-          
-            console.log(userLocation);
-            
-            if (navigating) {
-                map.setCenter(userLocation);
-             
-                if (position.coords.heading !== null) {
-                    map.setHeading(position.coords.heading); 
+
+            // Listeners de botones
+            document.getElementById('searchInput').addEventListener('input', manejarBusqueda);
+            document.getElementById('iniciarRuta').addEventListener('click', startNavigation);
+            document.getElementById('centrar').addEventListener('click', centerMap);
+            document.getElementById('salirRuta').addEventListener('click', stopNavigation);
+
+            // Estado inicial de botones
+            document.getElementById("iniciarRuta").classList.remove("hidden");
+            document.getElementById("buscar").classList.remove("hidden");
+            document.getElementById("centrar").classList.remove("hidden");
+            document.getElementById("salirRuta").classList.add("hidden");
+
+             // Listener para resultados de búsqueda (Delegación)
+             const contenedorResultados = document.getElementById('searchResults');
+             if(contenedorResultados){
+                 contenedorResultados.addEventListener('click', handleSearchResultClick);
+             } else {
+                 console.error("Contenedor de resultados de búsqueda no encontrado.");
+             }
+        });
+
+        // --- Inicialización del Mapa ---
+        async function initMap() {
+            try {
+                map = new google.maps.Map(document.getElementById("map"), {
+                    zoom: 15,
+                    center: DEFAULT_LOCATION,
+                    //mapTypeId: "satellite", // O 'roadmap'
+                    tilt: 0, // Inicia sin inclinación
+                    streetViewControl: false,
+                    mapTypeControl: false, // Ocultar selector de tipo de mapa
+                    zoomControl: true,
+                    fullscreenControl: false,
+                    //styles: [{ featureType: "poi", stylers: [{ visibility: "off" }] }], // Ocultar Puntos de Interés
+                    mapId: 'dca8e9ef523bf712', // Opcional: Tu Map ID si usas Cloud-based styling
+                });
+
+                directionsService = new google.maps.DirectionsService();
+                directionsRenderer = new google.maps.DirectionsRenderer({
+                    suppressMarkers: true,    // No mostrar marcadores A/B por defecto
+                    preserveViewport: true,  // CLAVE: No ajustar zoom/centro al poner ruta
+                    polylineOptions: {
+                        strokeColor: '#4285F4', // Color de la ruta
+                        strokeWeight: 6,       // Grosor de la ruta
+                        strokeOpacity: 0.8     // Opacidad
+                    }
+                });
+                directionsRenderer.setMap(map);
+
+                // Iniciar Geolocalización
+                if (navigator.geolocation) {
+                    watchId = navigator.geolocation.watchPosition(
+                        updateUserLocation,
+                        handleLocationError,
+                        { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 } // Ajustar timeouts si es necesario
+                    );
+                } else {
+                    handleLocationError(); // Llama sin argumento para indicar no soporte
                 }
+
+                // Cargar lugares en el mapa
+                await addPlacesToMap();
+
+            } catch (error) {
+                 console.error("Error fatal inicializando el mapa:", error);
+                 alert("Hubo un error al cargar el mapa. Por favor, recarga la página.");
             }
-
-            checkIfUserDeviates();
-
         }
 
+        // --- Manejo de Errores de Geolocalización ---
+        function handleLocationError(error = null) {
+            let message = "Error desconocido de geolocalización.";
+            if (error) {
+                 switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        message = "Permiso de ubicación denegado.";
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        message = "Información de ubicación no disponible.";
+                        break;
+                    case error.TIMEOUT:
+                        message = "Se agotó el tiempo para obtener la ubicación.";
+                        break;
+                }
+                 console.error("Error de Geolocalización:", error.message);
+            } else if (!navigator.geolocation) {
+                 message = "Tu navegador no soporta geolocalización.";
+            }
+             alert(message + " Funcionalidades limitadas.");
+            // Podría centrar el mapa en DEFAULT_LOCATION si userLocation es null
+             if (!userLocation) {
+                map.setCenter(DEFAULT_LOCATION);
+                map.setZoom(12); // Alejar un poco si no hay ubicación
+             }
+        }
+
+        // --- Actualización de Ubicación del Usuario ---
+        function updateUserLocation(position) {
+            try {
+                userLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                const deviceHeading = position.coords.heading; // Puede ser null
+
+                 // 1. Actualizar marcador de usuario (posición y rotación)
+                createUserMarker(userLocation, deviceHeading);
+
+                // 2. Lógica durante la navegación activa
+                if (navigating && currentRoute) {
+                    map.moveCamera({ center: userLocation }); // Centrar suavemente
+
+                    // 3. Orientación del mapa según el paso de la ruta
+                    const steps = currentRoute.legs[0].steps;
+                    if (steps && currentStepIndex < steps.length) {
+                         const endOfCurrentStep = steps[currentStepIndex].end_location;
+                        if (endOfCurrentStep && typeof endOfCurrentStep.lat === 'function') {
+                            // Calcular distancia al final del paso actual
+                            try {
+                                const distanceToEnd = google.maps.geometry.spherical.computeDistanceBetween(
+                                    new google.maps.LatLng(userLocation.lat, userLocation.lng),
+                                    endOfCurrentStep
+                                );
+
+                                // Si está cerca del final, avanzar al siguiente paso y reorientar
+                                if (distanceToEnd < STEP_END_THRESHOLD && currentStepIndex < steps.length - 1) {
+                                    currentStepIndex++;
+                                    console.log(`Avance detectado: Pasando al paso ${currentStepIndex + 1}/${steps.length}`);
+                                    setMapHeadingBasedOnStep(currentStepIndex);
+                                }
+                            } catch (geoError) {
+                                 console.error("Error calculando distancia al fin del paso:", geoError);
+                            }
+                        }
+                    }
+                     // 4. Verificar desvío de la ruta general
+                    checkIfUserDeviates();
+                } 
+
+             } catch (error) {
+                 console.error("Error en updateUserLocation:", error);
+             }
+        }
+
+        // --- Crear/Actualizar Marcador de Usuario (Flecha Rotatoria) ---
+        function createUserMarker(location, deviceHeading = null) {
+            const rotation = (deviceHeading !== null && !isNaN(deviceHeading)) ? deviceHeading : (map ? map.getHeading() || 0 : 0);
+
+            const icon = {
+                url: 'arrow.png', // <-- ¡ASEGÚRATE DE QUE ESTA RUTA SEA CORRECTA!
+                scaledSize: new google.maps.Size(35, 35),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(17.5, 17.5),
+                rotation: rotation // Rotación del icono según dispositivo o mapa
+            };
+
+             if (!userMarker) {
+                userMarker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    icon: icon,
+                    title: "Tu ubicación",
+                    zIndex: 1000 // Asegurar que esté encima de otros elementos
+                });
+            } else {
+                userMarker.setPosition(location);
+                userMarker.setIcon(icon); // Actualizar icono para rotación
+            }
+        }
+
+        // --- Ajustar Heading del Mapa basado en un Paso de la Ruta ---
+        function setMapHeadingBasedOnStep(stepIndex) {
+            if (!currentRoute || !currentRoute.legs || !currentRoute.legs[0].steps || stepIndex >= currentRoute.legs[0].steps.length) {
+                console.warn(`Índice de paso ${stepIndex} inválido o ruta no disponible para heading.`);
+                return;
+            }
+
+            const step = currentRoute.legs[0].steps[stepIndex];
+            let stepHeading = NaN;
+
+            try {
+                // Intentar calcular heading desde el path del paso (más preciso)
+                 if (step.path && step.path.length >= 2 && step.path[0] && typeof step.path[0].lat === 'function' && step.path[1] && typeof step.path[1].lat === 'function') {
+                    stepHeading = google.maps.geometry.spherical.computeHeading(step.path[0], step.path[1]);
+                 }
+                 // Fallback: usar inicio y fin del paso
+                 else if (step.start_location && typeof step.start_location.lat === 'function' && step.end_location && typeof step.end_location.lat === 'function') {
+                    stepHeading = google.maps.geometry.spherical.computeHeading(step.start_location, step.end_location);
+                 }
+             } catch (e) {
+                 console.error(`Error calculando heading para el paso ${stepIndex}:`, e);
+             }
+
+            if (!isNaN(stepHeading)) {
+                console.log(`Ajustando heading del mapa al paso ${stepIndex + 1}: ${stepHeading.toFixed(1)}°`);
+                map.moveCamera({ heading: stepHeading }); // Usar moveCamera para una transición más suave si es posible
+                // map.setHeading(stepHeading); // Alternativa directa
+            } else {
+                console.warn(`No se pudo calcular un heading válido para el paso ${stepIndex + 1}.`);
+            }
+        }
+
+
+        // --- Gestión de Lugares (Marcadores Personalizados) ---
         async function addPlacesToMap() {
             try {
-                // Obtener los lugares dinámicamente desde la API
-                const places = await buscarUbicaciones('@');
-                
-                // Limpiar marcadores anteriores
-                // clearMarkers();
+                const places = await buscarUbicaciones('@'); // Cargar todos al inicio
+
+                // Limpiar marcadores anteriores (si se recarga)
+                clearPlacesMarkers();
 
                 places.forEach(lugar => {
+                    const position = { lat: Number(lugar.latitud), lng: Number(lugar.longitud) };
+
+                     if (isNaN(position.lat) || isNaN(position.lng)) {
+                        console.warn(`Coordenadas inválidas para lugar ${lugar.id}:`, lugar.latitud, lugar.longitud);
+                        return; // Saltar este lugar
+                     }
+
+                    // Marcador base transparente (ancla para InfoWindow)
                     const marcador = new google.maps.Marker({
-                        position: {
-                            lat: Number(lugar.latitud),
-                            lng: Number(lugar.longitud)
-                        },
-                        map: map, // Se muestra en el mapa directamente
+                        position: position,
+                        map: map,
                         title: lugar.nombre,
-                        icon: "https://maps.gstatic.com/mapfiles/transparent.png"
+                        icon: "https://maps.gstatic.com/mapfiles/transparent.png" // Invisible
                     });
 
-                    // Crear el InfoWindow con botones
-                    const infoWindow = new google.maps.InfoWindow({
-                        content: `
-                            <div style="text-align:center;" class="btn-group">
-                               
-                                <button id="iniciarRuta" class="btn  btn-outline btn-primary" onclick="searchPlace(${lugar.id})">
-                                    <i class="ki-filled ki-route"></i> Ver Ruta
-                                </button>
-                               <button id="iniciarRuta" class="btn  btn-outline btn-primary" onclick="cargarGaleria(${lugar.id})" >
-                                  <i class="ki-filled ki-picture"></i> Galeria
-                                </button>
-                            </div>
-                        `
-                    });
+                    // InfoWindow con acciones
+                    const infoWindowContent = `
+                        <div style="text-align:center;" class="btn-group">
+                            <button class="btn btn-sm btn-outline btn-primary" onclick="confirmAndSearchPlace(${lugar.id}, '${lugar.nombre}')">
+                                <i class="ki-filled ki-route"></i> Ver Ruta
+                            </button>
+                            ${lugar.imagenes && lugar.imagenes.length > 0 ?
+                            `<button class="btn btn-sm btn-outline btn-success" onclick="cargarGaleria(${lugar.id})">
+                                <i class="ki-filled ki-picture"></i> Galería
+                             </button>` : ''}
+                        </div>`;
+                    const infoWindow = new google.maps.InfoWindow({ content: infoWindowContent });
 
-                    // Crear el ícono redondo personalizado
+                    // --- Overlay Personalizado ---
                     const divIcon = document.createElement("div");
                     divIcon.className = "place-icon";
-                    divIcon.style.background = '#17C653';
-                    divIcon.style.position = "absolute";
-                    divIcon.style.cursor = "pointer"; // Para que se vea como clickeable
-                    divIcon.innerHTML = `<img src="${lugar.imagen_destacada}" alt="icono">`;
+                    divIcon.innerHTML = `<img src="${lugar.imagen_destacada || 'assets/media/app/favicon.ico'}" alt="icono">`; // Fallback icon
 
-                    // Crear la etiqueta con el nombre del lugar
                     const divLabel = document.createElement("div");
                     divLabel.className = "place-label";
-                    divLabel.style.position = "absolute";
-                    divLabel.innerHTML = `${lugar.nombre} <br> <small style="color:gray">${lugar.tipo.nombre}</small>`;
+                    divLabel.innerHTML = `${lugar.nombre} <br> <small style="color:gray">${lugar.tipo.nombre || ''}</small>`;
 
-                    // Agregar los elementos al mapa como overlay
                     const overlay = new google.maps.OverlayView();
                     overlay.onAdd = function () {
                         const panes = this.getPanes();
-                        panes.overlayMouseTarget.appendChild(divIcon);
-                        panes.overlayMouseTarget.appendChild(divLabel);
-                        
-                        // 📌 Hacer clic en el icono y abrir el InfoWindow
-                        [divIcon, divLabel].forEach(element => {
-                            element.addEventListener("click", () => {
-                                if (activeInfoWindow) {
-                                    activeInfoWindow.close(); // Cierra el InfoWindow anterior
-                                }
-                                infoWindow.open(map, marcador);
-                                activeInfoWindow = infoWindow; // Guarda el nuevo InfoWindow activo
-                            });
-                        });
-                    };
-                    
-                    overlay.draw = function () {
-                        const pos = this.getProjection().fromLatLngToDivPixel(marcador.getPosition());
-                        divIcon.style.left = `${pos.x}px`;
-                        divIcon.style.top = `${pos.y}px`;
-                        divLabel.style.left = `${pos.x + 20}px`;
-                        divLabel.style.top = `${pos.y - 10}px`;
-                    };
-                    
-                    overlay.setMap(map);
+                        if (panes) {
+                            panes.overlayMouseTarget.appendChild(divIcon);
+                            panes.overlayMouseTarget.appendChild(divLabel);
 
-                    // Guardar en el array
-                    placesMarkers.push({ marcador, overlay });
+                            // Event listener para abrir InfoWindow
+                            [divIcon, divLabel].forEach(element => {
+                                element.addEventListener("click", (e) => {
+                                     e.stopPropagation(); // Evitar que el clic se propague al mapa
+                                    cerrarInfoWindow(); // Cerrar la anterior
+                                    infoWindow.open(map, marcador);
+                                    activeInfoWindow = infoWindow;
+                                });
+                            });
+                        }
+                    };
+
+                    overlay.draw = function () {
+                        const projection = this.getProjection();
+                        if (!projection) return; // Asegurarse que la proyección existe
+                        const pos = projection.fromLatLngToDivPixel(marcador.getPosition());
+                        if (pos) {
+                             // Aplicar estilos de posición aquí directamente
+                             divIcon.style.left = `${pos.x}px`;
+                             divIcon.style.top = `${pos.y}px`;
+                             // El transform del label ya está en el CSS
+                             divLabel.style.left = `${pos.x}px`;
+                             divLabel.style.top = `${pos.y}px`;
+
+                        }
+                    };
+                    overlay.onRemove = function() {
+                        if (divIcon.parentNode) { divIcon.parentNode.removeChild(divIcon); }
+                        if (divLabel.parentNode) { divLabel.parentNode.removeChild(divLabel); }
+                    };
+
+                    overlay.setMap(map);
+                    placesMarkers.push({ marcador, overlay, infoWindow });
                 });
 
-                // Verificar el zoom al inicio y cada vez que cambie
-                // updatePlacesVisibility();
-                // google.maps.event.addListener(map, "zoom_changed", updatePlacesVisibility);
+                // Opcional: Listener para cerrar InfoWindow al hacer clic en el mapa
+                map.addListener('click', cerrarInfoWindow);
 
             } catch (error) {
                 console.error("Error al agregar lugares al mapa:", error);
             }
         }
 
-        // // Función para mostrar u ocultar los places según el zoom
-        // function updatePlacesVisibility() {
-        //     const zoom = map.getZoom();
-        //     const visible = zoom >= MIN_ZOOM && zoom <= MAX_ZOOM;
-
-        //     placesMarkers.forEach(({ marcador, overlay }) => {
-        //         marcador.setMap(visible ? map : null);
-        //         overlay.setMap(visible ? map : null);
-        //     });
-        // }
-
-        // // Función para limpiar los marcadores anteriores antes de agregar nuevos
-        // function clearMarkers() {
-        //     placesMarkers.forEach(({ marcador, overlay }) => {
-        //         marcador.setMap(null);
-        //         overlay.setMap(null);
-        //     });
-        //     placesMarkers = []; // Vaciar el array de marcadores
-        // }
+        function clearPlacesMarkers() {
+            placesMarkers.forEach(({ marcador, overlay, infoWindow }) => {
+                marcador.setMap(null);
+                overlay.setMap(null); // Esto debería llamar a onRemove
+                infoWindow.close();
+            });
+            placesMarkers = [];
+            cerrarInfoWindow(); // Asegurar que no quede ninguna abierta
+        }
 
         function cerrarInfoWindow() {
             if (activeInfoWindow) {
@@ -466,258 +531,405 @@
             }
         }
 
-        async function searchPlace(ubicacionId) {
-            cerrarInfoWindow()
+        // --- Búsqueda y Cálculo de Ruta ---
+        async function confirmAndSearchPlace(ubicacionId, nombre) {
+             cerrarInfoWindow();
+             const result = await Swal.fire({
+                 title: `¿Ver ruta a ${nombre}?`,
+                 text: 'Se calculará la ruta desde tu ubicación actual.',
+                 icon: 'question',
+                 showCancelButton: true,
+                 confirmButtonText: 'Sí, ver ruta',
+                 cancelButtonText: 'Cancelar',
+                 confirmButtonColor: '#3085d6',
+                 cancelButtonColor: '#d33'
+             });
 
-            const ubicacion = await obtenerUbicacion(ubicacionId);
-            if (!ubicacion) return;
-          
-            const targetLocation = { 
-                lat:  Number(ubicacion.latitud), 
-                lng:  Number(ubicacion.longitud)
-            };
-         
-            map.setCenter(targetLocation);
-            calculateRoute(targetLocation);
+             if (result.isConfirmed) {
+                 searchPlace(ubicacionId);
+             }
         }
-        let ultimaCoordenada;
+
+
+        async function searchPlace(ubicacionId) {
+            cerrarInfoWindow();
+            if (!userLocation) {
+                alert("No se puede calcular la ruta sin tu ubicación actual. Asegúrate de haber concedido permisos.");
+                return;
+            }
+
+            try {
+                const ubicacion = await obtenerUbicacion(ubicacionId);
+                if (!ubicacion || isNaN(Number(ubicacion.latitud)) || isNaN(Number(ubicacion.longitud))) {
+                     alert("No se pudieron obtener los detalles de la ubicación o las coordenadas son inválidas.");
+                     return;
+                }
+
+                const targetLocation = {
+                    lat: Number(ubicacion.latitud),
+                    lng: Number(ubicacion.longitud)
+                };
+
+                 // Centrar en el destino ANTES de calcular para que preserveViewport funcione desde esa vista
+                 // map.setCenter(targetLocation);
+                 // map.setZoom(16); // Zoom razonable al destino
+
+                 calculateRoute(targetLocation);
+
+            } catch (error) {
+                 console.error("Error buscando o calculando ruta para el lugar:", error);
+                 alert("Hubo un problema al obtener o calcular la ruta.");
+            }
+        }
+
         function calculateRoute(targetLocation) {
-            ultimaCoordenada = targetLocation;
-            
-            if (!userLocation) return;
-            
-            directionsRenderer.setDirections({ routes: [] });
-            
+            if (!userLocation || !targetLocation) {
+                console.warn("Origen o destino faltante para calcular ruta.");
+                return;
+            }
+
+            ultimaCoordenada = targetLocation; // Guardar destino para recalculos
+            initialCheckDone = false; // Reiniciar chequeo de desvío para la nueva ruta
+            currentStepIndex = 0; // Reiniciar pasos
+            currentRoute = null; // Limpiar ruta anterior
+            routePath = []; // Limpiar path de desvío
+
+             // Mostrar un indicador de carga si se desea
+             // Swal.showLoading();
+
             directionsService.route({
                 origin: userLocation,
                 destination: targetLocation,
-                travelMode: "DRIVING"
-            }, (result, status) => {
-                if (status === "OK") {
+                travelMode: google.maps.TravelMode.DRIVING,
+                provideRouteAlternatives: false // Generalmente no necesitamos alternativas para la navegación directa
+            })
+            .then((result) => {
+                // Swal.close(); // Ocultar indicador de carga
+                 if (result.routes && result.routes.length > 0) {
                     directionsRenderer.setDirections(result);
+                    currentRoute = result.routes[0];
+                    routePath = currentRoute.overview_path || []; // Guardar el path para desvíos
 
-                    
-                    routePath = result.routes[0].overview_path;
+                    // Cerrar modal de búsqueda si estaba abierto
+                    if (modalInstanceBusq) {
+                        modalInstanceBusq.hide();
+                    }
+                    // Opcional: Ajustar vista inicial si NO se está navegando
+                    if(!navigating) {
+                        map.fitBounds(currentRoute.bounds);
+                    }
+                    console.log("Ruta calculada:", currentRoute);
+                     // Habilitar botón de iniciar ruta si no estaba habilitado
+                    document.getElementById('iniciarRuta').disabled = false;
 
-
-                    modalInstanceBusq.hide();
-                } else {
-                    console.error("Error al calcular la ruta: ", status);
-                }
+                 } else {
+                     throw new Error("La API de Directions no devolvió rutas.");
+                 }
+            })
+            .catch((e) => {
+                // Swal.close();
+                console.error("Error al calcular la ruta: ", e);
+                alert("No se pudo calcular la ruta. Verifica la conexión o las ubicaciones. Detalles: " + e.message);
+                 // Deshabilitar botón de iniciar ruta si falla el cálculo
+                document.getElementById('iniciarRuta').disabled = true;
             });
         }
 
-        async function obtenerUbicacion(id) {
-            try {
-                const response = await fetch(`/ubicaciones/${id}`);
-                if (!response.ok) throw new Error(`Error: ${response.status}`);
-
-                return await response.json();
-            } catch (error) {
-                console.error("Error al obtener la ubicación:", error);
-                return null;
-            }
-        }
-
-
+        // --- Funciones de Navegación ---
         function startNavigation() {
-            console.log('cantidad de rutas: ',  directionsRenderer.getDirections());
-
-            if (!directionsRenderer.getDirections()) {
-                alert('sin ruta');
+            if (!currentRoute) {
+                alert("Debes calcular una ruta primero.");
                 return;
             }
+            if (!userLocation) {
+                 alert("Necesitamos tu ubicación para iniciar la navegación.");
+                 return;
+            }
+
+            console.log("Iniciando navegación...");
+            navigating = true;
+            initialCheckDone = false; // Permitir chequeo de desvío inicial
+            currentStepIndex = 0; // Empezar desde el primer paso
+
+            // Actualizar UI
             document.getElementById("iniciarRuta").classList.add("hidden");
             document.getElementById("buscar").classList.add("hidden");
-
             document.getElementById("salirRuta").classList.remove("hidden");
-         
-            navigating = true;
+            document.body.classList.add('navigating'); // Clase para estilos opcionales
 
-            map.setZoom(18); // Aumentar el zoom para mejor visualización
-            map.setCenter(userLocation);
+            // Ajustar vista del mapa para navegación
+            map.setZoom(18); // Zoom cercano
+            map.setTilt(45); // Inclinar mapa
+            map.setCenter(userLocation); // Centrar en usuario
+
+            // Orientar según el primer paso
+            setMapHeadingBasedOnStep(0);
+
+             // Si watchPosition no estaba activo, asegurarse de activarlo
+             // (Normalmente ya debería estar activo desde initMap)
+             if (!watchId && navigator.geolocation) {
+                 console.warn("WatchPosition no estaba activo, reiniciando...");
+                watchId = navigator.geolocation.watchPosition(
+                    updateUserLocation,
+                    handleLocationError,
+                    { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+                );
+             }
+        }
+
+        function stopNavigation() {
+            console.log("Deteniendo navegación...");
+            navigating = false;
+            // clearWatch ya no es necesario si usamos el watchId global de initMap
+            // if (watchId !== null && navigator.geolocation) {
+            //     navigator.geolocation.clearWatch(watchId);
+            //     watchId = null;
+            // }
+
+            // Limpiar estado
+            // currentRoute = null; // No limpiar la ruta, podría querer volver a iniciarla
+            currentStepIndex = 0;
+
+            // Resetear vista del mapa
+            map.setTilt(0);
+            map.setHeading(0);
+
+            // Opcional: limpiar la línea de la ruta del mapa
+            // directionsRenderer.setDirections({ routes: [] });
+            // currentRoute = null; // Limpiar datos de ruta si se limpia del mapa
+
+
+             // Opcional: Ajustar zoom para ver la ruta completa si aún existe
+            // if (currentRoute) {
+            //     map.fitBounds(currentRoute.bounds);
+            // }
+
+            // Actualizar UI
+            document.getElementById("iniciarRuta").classList.remove("hidden");
+            document.getElementById("buscar").classList.remove("hidden");
+            document.getElementById("salirRuta").classList.add("hidden");
+            document.body.classList.remove('navigating');
+        }
+
+        function checkIfUserDeviates() {
+            if (!navigating || !currentRoute || !routePath || routePath.length === 0 || !userLocation) {
+                 return; // No hacer nada si no se está navegando o faltan datos
+            }
+
+            let nearestDistance = Infinity;
+             try {
+                const currentLatLng = new google.maps.LatLng(userLocation.lat, userLocation.lng);
+                // Calcular la distancia al punto más cercano en la ruta (overview_path)
+                 nearestDistance = routePath.reduce((minDist, point) => {
+                     // Asegurarse que 'point' es un LatLng (puede venir como objeto literal a veces)
+                     const routePoint = (typeof point.lat === 'function') ? point : new google.maps.LatLng(point.lat, point.lng);
+                    let dist = google.maps.geometry.spherical.computeDistanceBetween(currentLatLng, routePoint);
+                    return Math.min(minDist, dist);
+                }, Infinity);
+
+             } catch(e) {
+                console.error("Error calculando distancia para desvío:", e);
+                return; // Salir si hay error en cálculo
+             }
+
+
+             // Lógica de chequeo inicial (evita recalcular si el usuario empieza lejos)
+             if (!initialCheckDone) {
+                console.log(`Distancia inicial a la ruta: ${nearestDistance.toFixed(1)}m`);
+                // Considerar que está en ruta si está razonablemente cerca
+                if (nearestDistance < deviationThreshold * 1.5) { // Un poco más de margen al inicio
+                    initialCheckDone = true;
+                    console.log("Usuario detectado cerca de la ruta inicial.");
+                }
+                return; // No recalcular en el primer chequeo fallido
+            }
+
+             // Si se ha desviado MÁS ALLÁ del umbral DESPUÉS del chequeo inicial
+             if (nearestDistance > deviationThreshold) {
+                 console.warn(`¡Desvío detectado! Distancia: ${nearestDistance.toFixed(1)}m > ${deviationThreshold}m. Recalculando...`);
+                 initialCheckDone = false; // Forzar un nuevo chequeo inicial tras recalcular
+                 calculateRoute(ultimaCoordenada); // Recalcular hacia el mismo destino final
+            }
         }
 
         function centerMap() {
             if (userLocation) {
                 map.setCenter(userLocation);
+                // Opcional: ajustar zoom si se desea al centrar
+                 if (!navigating) map.setZoom(16);
+                 else map.setZoom(18);
+            } else {
+                alert("Aún no se ha detectado tu ubicación para centrar.");
             }
         }
 
-        let initialCheckDone = false;
-        function checkIfUserDeviates() {
-            if (!routePath.length || !userLocation) return;
-
-            let nearestDistance = routePath.reduce((minDist, point) => {
-                let dist = google.maps.geometry.spherical.computeDistanceBetween(
-                    new google.maps.LatLng(userLocation.lat, userLocation.lng),
-                    point
-                );
-                return Math.min(minDist, dist);
-            }, Infinity);
-           
-            if (!initialCheckDone) {
-                // Esperar hasta que el usuario esté razonablemente cerca de la ruta
-                console.log(nearestDistance);
-                
-                if (nearestDistance < (deviationThreshold / 2)) { 
-                    initialCheckDone = true;
-                }
-                return;
-            }
-
-            if (nearestDistance > deviationThreshold) {
-                console.log("Recalculando ruta por desviación...");
-                calculateRoute(ultimaCoordenada);
-            }
-        }
-
-        function stopNavigation() {
-            directionsRenderer.setDirections({
-                routes: []
-            });
-            document.getElementById("iniciarRuta").classList.remove("hidden");
-            document.getElementById("buscar").classList.remove("hidden");
-
-            document.getElementById("salirRuta").classList.add("hidden");
-            navigating = false;
-
-            initialCheckDone = true;
-        }
-
+        // --- Funciones de API Backend (Búsqueda, Detalles, Galería) ---
         async function buscarUbicaciones(busqueda) {
-
+            // Añadir indicador visual de carga si es necesario
             try {
-                const response = await fetch(`/ubicaciones/buscar/${encodeURIComponent(busqueda)}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-
+                 const encodedBusqueda = encodeURIComponent(busqueda || '@'); // Usar '@' si está vacío para buscar todos
+                const response = await fetch(`/ubicaciones/buscar/${encodedBusqueda}`);
                 if (!response.ok) {
-                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                    throw new Error(`Error de red: ${response.status} - ${response.statusText}`);
                 }
-
                 const data = await response.json();
-                console.log('Ubicaciones encontradas:', data);
                 return data;
-
             } catch (error) {
                 console.error('Error al buscar ubicaciones:', error.message);
-                return [];
+                 // Mostrar error al usuario si es apropiado
+                return []; // Devolver array vacío en caso de error
             }
         }
 
-        // Función para manejar la búsqueda en tiempo real con debounce
+        async function obtenerUbicacion(id) {
+            try {
+                const response = await fetch(`/ubicaciones/${id}`);
+                if (!response.ok) {
+                     throw new Error(`Error de red al obtener ubicación ${id}: ${response.status}`);
+                }
+                return await response.json();
+            } catch (error) {
+                console.error("Error al obtener la ubicación:", error);
+                return null; // Devolver null en caso de error
+            }
+        }
+
+        async function cargarGaleria(id) {
+            cerrarInfoWindow(); // Cerrar infoWindow si está abierta
+            if (!modalInstanceGaleria) {
+                 console.error("Instancia del modal de galería no disponible.");
+                 alert("No se puede mostrar la galería en este momento.");
+                 return;
+            }
+
+             // Mostrar un spinner o indicador de carga dentro del modal
+            const mainImage = document.getElementById("mainImage");
+            const thumbnailContainer = document.getElementById("thumbnailContainer");
+            mainImage.src = ''; // Limpiar imagen anterior
+            thumbnailContainer.innerHTML = '<p class="text-center w-full p-4">Cargando galería...</p>';
+             modalInstanceGaleria.show();
+
+
+            try {
+                const data = await obtenerUbicacion(id);
+                if (!data || !data.imagenes || !Array.isArray(data.imagenes) || data.imagenes.length === 0) {
+                    thumbnailContainer.innerHTML = '<p class="text-center w-full p-4 text-red-500">No se encontraron imágenes para este lugar.</p>';
+                    console.warn("No se encontraron imágenes válidas para ID:", id);
+                    return;
+                }
+
+                const images = data.imagenes;
+                mainImage.src = images[0].url || ""; // Primera imagen como principal
+
+                // Limpiar contenedor antes de añadir nuevas miniaturas
+                thumbnailContainer.innerHTML = "";
+
+                images.forEach((imgData, index) => {
+                    if (!imgData || !imgData.url) return; // Saltar si falta la URL
+
+                    const thumb = document.createElement("img");
+                    thumb.src = imgData.url;
+                    thumb.alt = `Miniatura ${index + 1}`;
+                     // Clases de Tailwind para estilo y estado activo/hover
+                    thumb.className = "object-cover object-center h-20 w-20 rounded-lg cursor-pointer border-2 border-transparent hover:border-blue-500 transition duration-200 ease-in-out";
+
+                    thumb.addEventListener("click", () => {
+                        mainImage.src = imgData.url;
+                        // Resaltar miniatura activa
+                        document.querySelectorAll("#thumbnailContainer img").forEach(img => img.classList.replace("border-blue-500", "border-transparent"));
+                        thumb.classList.replace("border-transparent", "border-blue-500");
+                    });
+                    thumbnailContainer.appendChild(thumb);
+                });
+
+                // Marcar la primera miniatura como activa por defecto
+                if (thumbnailContainer.children.length > 0) {
+                     thumbnailContainer.children[0].classList.replace("border-transparent", "border-blue-500");
+                }
+
+            } catch (error) {
+                console.error("Error al cargar la galería:", error);
+                 thumbnailContainer.innerHTML = `<p class="text-center w-full p-4 text-red-500">Error al cargar galería: ${error.message}</p>`;
+            }
+        }
+
+        // --- Manejo de Búsqueda en Tiempo Real ---
         async function manejarBusqueda() {
-            
             const now = Date.now();
             if (now - lastSearchTime < searchCooldown) {
+                 // Aún no ha pasado el tiempo de cooldown, no hacer nada
                 return;
             }
-            
-            lastSearchTime = now;
+            lastSearchTime = now; // Actualizar el tiempo de la última búsqueda
             await realizarBusqueda();
         }
 
-        // Función que ejecuta la búsqueda y actualiza el DOM
         async function realizarBusqueda() {
-            let  busqueda = document.getElementById('searchInput').value.trim();
+            let busqueda = document.getElementById('searchInput').value.trim();
             const contenedor = document.getElementById('searchResults');
+            if (!contenedor) return; // Salir si el contenedor no existe
 
-            if (busqueda === '') {
-                busqueda = '@';
-                // contenedor.innerHTML = '<p class="text-gray-500 text-sm p-2">Escribe para buscar...</p>';
-                // return;
-            }
+            contenedor.innerHTML = '<p class="text-gray-500 text-sm p-2 text-center">Buscando...</p>'; // Feedback de carga
 
             const resultados = await buscarUbicaciones(busqueda);
 
-            // Limpiar resultados anteriores
-            contenedor.innerHTML = '';
+            contenedor.innerHTML = ''; // Limpiar resultados anteriores
 
             if (resultados.length === 0) {
-                contenedor.innerHTML = '<p class="text-gray-500 text-sm p-2">No se encontraron resultados.</p>';
+                contenedor.innerHTML = '<p class="text-gray-500 text-sm p-2 text-center">No se encontraron resultados.</p>';
                 return;
             }
 
             // Construir tarjetas dinámicamente
             resultados.forEach(ubicacion => {
                 const card = document.createElement('div');
-                card.className = 'card mt-2';
-             
+                 // Usar clases más simples o ajustar según el framework CSS
+                 card.className = 'flex items-center justify-between p-2 mb-1 hover:bg-gray-100 cursor-pointer border-b border-gray-200 last:border-b-0';
+                 card.setAttribute('data-id', ubicacion.id);
+                 card.setAttribute('data-nombre', ubicacion.nombre); // Guardar nombre para confirmación
 
                 card.innerHTML = `
-                    <div class="card-body flex items-center justify-between py-1 mb-1 gap-10 hover:bg-gray-100 cursor-pointer transition-all duration-200"  data-id="${ubicacion.id}">
-                        <div class="flex items-center gap-2.5">
-                            <div class="flex flex-col">
-                                <div class="text-2sm mb-px">
-                                    <p class="font-semibold text-gray-900" >
-                                        ${ubicacion.nombre}
-                                    </p>
-                                </div>
-                                <span class="flex items-center text-2xs font-medium text-gray-500">
-                                    Propiedad
-                                </span>
-                            </div>
-                        </div>
-                        <div class="flex gap-2.5 btn btn-sm  btn-clear btn-success" onclick="cargarGaleria(${ubicacion.id})">
-                            <i class="ki-filled ki-picture"></i> Galeria
-                        </div>
+                    <div class="flex-grow pr-4">
+                        <p class="font-semibold text-gray-900 text-sm">${ubicacion.nombre}</p>
+                        <span class="text-xs font-medium text-gray-500">${ubicacion.tipo?.nombre || 'Ubicación'}</span>
                     </div>
+                     ${ubicacion.imagenes && ubicacion.imagenes.length > 0 ? `
+                    <button class="btn btn-xs btn-icon btn-light-success flex-shrink-0 btn-galeria-busqueda" title="Ver Galería">
+                       <i class="ki-duotone ki-picture fs-5"><span class="path1"></span><span class="path2"></span></i>
+                    </button>
+                    ` : '' }
                 `;
                 contenedor.appendChild(card);
             });
         }
 
-        const contenedorResultados = document.getElementById('searchResults');
-        
-        // Delegación de eventos: Añadimos un solo event listener al contenedor
-        contenedorResultados.addEventListener('click', async (e) => {
-            const card = e.target.closest('.card-body');
-            const botonGaleria = e.target.closest('.btn-success');
+        // --- Manejador de Clics en Resultados de Búsqueda (Delegación) ---
+        async function handleSearchResultClick(event) {
+             const card = event.target.closest('.flex.items-center.justify-between'); // Selector más específico de la tarjeta
+             if (!card) return; // Clic fuera de una tarjeta
 
-            if (botonGaleria) {
-                e.stopPropagation(); // Evita que el clic en el botón active el evento del card-body
-                const ubicacionId = botonGaleria.closest('.card-body').getAttribute('data-id');
-                cargarGaleria(ubicacionId);
-                return;
-            }
+             const ubicacionId = card.getAttribute('data-id');
+             const ubicacionNombre = card.getAttribute('data-nombre');
 
-            if (card) {
-                const ubicacionId = card.getAttribute('data-id');
-                
-                const result = await Swal.fire({
-                    title: '¿Deseas ver la ruta hacia esta ubicación?',
-                    text: 'Se mostrará la ruta hacia la ubicación seleccionada.',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sí, ver ruta',
-                    cancelButtonText: 'No, gracias',
-                });
-
-                if (result.isConfirmed) {
-                    searchPlace(ubicacionId);
-                }
-            }
-        });
+             // Verificar si se hizo clic en el botón de galería
+             if (event.target.closest('.btn-galeria-busqueda')) {
+                 event.stopPropagation(); // Evitar que el clic active la ruta
+                 cargarGaleria(ubicacionId);
+             } else {
+                 // Clic en la tarjeta (no en el botón de galería) -> Confirmar ruta
+                 confirmAndSearchPlace(ubicacionId, ubicacionNombre);
+             }
+        }
 
     </script>
 
-  
     <script src="assets/js/core.bundle.js"></script>
     <script src="assets/vendors/apexcharts/apexcharts.min.js"></script>
     <script src="assets/js/widgets/general.js"></script>
     <script src="assets/js/layouts/demo1.js"></script>
-    
-    <script
-    src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=geometry,places&callback=initMap"
-    ></script>
+
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=geometry,places&callback=initMap&language=es&region=CO">
+    </script>
 </body>
-
 </html>
-
-
-
-       
