@@ -311,7 +311,10 @@
 
         // --- Actualización de Ubicación del Usuario ---
         function updateUserLocation(position) {
-
+            userLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
            
             if (!isNavigating || !currentRoute || typeof google.maps.geometry === 'undefined') return; // Salir si no estamos navegando, no hay ruta, o no cargó geometry
 
