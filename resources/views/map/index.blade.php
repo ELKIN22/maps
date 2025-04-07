@@ -98,13 +98,31 @@
 
     <div id="map"></div>
 
+    <div class="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-3xl" id="buscar" data-modal-toggle="#modalBusqueda">
+        <div class="flex items-center bg-white shadow-md rounded-full px-4 py-2 space-x-3">
+        <!-- Icono de búsqueda -->
+        <i class="ki-outline ki-magnifier"></i>
+    
+        <!-- Input de búsqueda -->
+        <input type="text"
+                class="flex-1 focus:outline-none text-gray-800 placeholder-gray-400 bg-transparent"
+                placeholder="Busca aquí..." />
+    
+        <!-- Logo de la empresa (imagen) -->
+        <img src="SIMBOLO.png"
+            alt="Logo empresa"
+            class="w-8 h-8 rounded-full object-cover" />
+        </div>
+    </div>
+      
+      
     <button id="iniciarRuta" class="btn btn-outline btn-primary fixed bottom-40 right-4 z-10">
         <i class="ki-filled ki-route"></i> Iniciar Ruta
     </button>
-    <button id="buscar" class="btn btn-outline btn-success fixed bottom-28 right-4 z-10" data-modal-toggle="#modalBusqueda">
+    {{-- <button id="buscar" class="btn btn-outline btn-success fixed bottom-28 right-4 z-10" data-modal-toggle="#modalBusqueda">
         <i class="ki-outline ki-magnifier"></i> Buscar
-    </button>
-    <button id="centrar" class="btn btn-outline btn-info fixed bottom-16 right-4 z-10">
+    </button> --}}
+    <button id="centrar" class="btn btn-outline btn-info fixed bottom-28 right-4 z-10">
         <i class="ki-filled ki-focus"></i> Centrar
     </button>
     <button id="salirRuta" class="btn btn-outline btn-danger fixed bottom-4 right-4 z-10 hidden">
@@ -197,7 +215,10 @@
             if (modalInstanceBusq) {
                 modalInstanceBusq.on('show', () => {
                     realizarBusqueda(); // Cargar resultados al abrir
-                    document.getElementById('searchInput').focus(); // Enfocar input
+                    setTimeout(() => {
+                        document.getElementById('searchInput').focus(); // Enfocar input
+                    }, 200);
+                   
                 });
             } else {
                  console.error("No se pudo inicializar el modal de búsqueda");
