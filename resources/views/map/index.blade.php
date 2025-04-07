@@ -259,9 +259,10 @@
                     center: DEFAULT_LOCATION,
                     streetViewControl: false,
                     mapTypeControl: false,
-                    zoomControl: true,
+                    zoomControl: false,
                     fullscreenControl: false,
-                    mapId: 'dca8e9ef523bf712', 
+                    mapId: 'dca8e9ef523bf712',
+                    disableDefaultUI: true,
                 });
 
                 directionsService = new google.maps.DirectionsService();
