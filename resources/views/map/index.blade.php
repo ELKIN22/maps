@@ -98,7 +98,7 @@
 
     <div id="map"></div>
 
-    <div class="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-3xl" id="buscar" data-modal-toggle="#modalBusqueda">
+    <div class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-3xl" id="buscar" data-modal-toggle="#modalBusqueda">
         <div class="flex items-center bg-white shadow-md rounded-full px-4 py-2 space-x-3">
         <!-- Icono de búsqueda -->
         <i class="ki-outline ki-magnifier"></i>
@@ -114,6 +114,7 @@
             class="w-8 h-8 rounded-full object-cover" />
         </div>
     </div>
+      
       
       
     <button id="iniciarRuta" class="btn btn-outline btn-primary fixed bottom-40 right-4 z-10">
@@ -272,6 +273,7 @@
                         strokeWeight: 6,       // Grosor de la ruta
                         strokeOpacity: 1     // Opacidad
                     }
+               
                 });
                 directionsRenderer.setMap(map);
 
@@ -316,13 +318,13 @@
                 message = "Tu navegador no soporta geolocalización.";
             }
 
-            Swal.fire({
-                icon: 'warning',
-                title: 'Problema con la ubicación',
-                text: message + " Algunas funcionalidades estarán limitadas.",
-                confirmButtonText: 'Entendido',
-                confirmButtonColor: '#3085d6'
-            });
+            // Swal.fire({
+            //     icon: 'warning',
+            //     title: 'Problema con la ubicación',
+            //     text: message + " Algunas funcionalidades estarán limitadas.",
+            //     confirmButtonText: 'Entendido',
+            //     confirmButtonColor: '#3085d6'
+            // });
 
             if (!userLocation) {
                 map.setCenter(DEFAULT_LOCATION);
