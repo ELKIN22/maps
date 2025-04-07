@@ -117,13 +117,13 @@
       
       
       
-    <button id="iniciarRuta" class="btn btn-outline btn-primary fixed bottom-40 right-4 z-10">
+    <button id="iniciarRuta" class="btn btn-outline btn-primary fixed bottom-28 right-4 z-10">
         <i class="ki-filled ki-route"></i> Iniciar Ruta
     </button>
     {{-- <button id="buscar" class="btn btn-outline btn-success fixed bottom-28 right-4 z-10" data-modal-toggle="#modalBusqueda">
         <i class="ki-outline ki-magnifier"></i> Buscar
     </button> --}}
-    <button id="centrar" class="btn btn-outline btn-info fixed bottom-28 right-4 z-10">
+    <button id="centrar" class="btn btn-outline btn-info fixed bottom-16 right-4 z-10">
         <i class="ki-filled ki-focus"></i> Centrar
     </button>
     <button id="salirRuta" class="btn btn-outline btn-danger fixed bottom-4 right-4 z-10 hidden">
