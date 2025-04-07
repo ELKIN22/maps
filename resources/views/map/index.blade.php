@@ -271,7 +271,7 @@
                     preserveViewport: true,  // CLAVE: No ajustar zoom/centro al poner ruta
                     polylineOptions: {
                         strokeColor: '#4285F4', // Color de la ruta
-                        strokeWeight: 6,       // Grosor de la ruta
+                        strokeWeight: 8,       // Grosor de la ruta
                         strokeOpacity: 1     // Opacidad
                     }
                
