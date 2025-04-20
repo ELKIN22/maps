@@ -3,10 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\UbicacionesController;
-
-Route::get('/', function () {
-    return view('welcome');
-});
+use App\Http\Controllers\TipoUbiController;
 
 Route::middleware([
     'auth:sanctum',
@@ -20,9 +17,21 @@ Route::middleware([
 
 
 
-Route::get('/mapa', function () {
+Route::get('/', function () {
     return view('map.index');
 });
 
-Route::apiResource('ubicaciones', UbicacionesController::class);
+
 Route::get('/ubicaciones/buscar/{busqueda}', [UbicacionesController::class, 'buscarUbicaciones']);
+Route::get('/ubicaciones/getPaginate', [UbicacionesController::class, 'index']);
+
+Route::get('/tipoUbi/all', [TipoUbiController::class, 'index']);
+
+
+Route::resource('ubicaciones', UbicacionesController::class)->only([
+    'show', 'store', 'update', 'destroy'
+]);
+
+Route::get('/ubicaciones', function () {
+    return view('ubicaciones.index');
+})->name('ubicaciones.index');
