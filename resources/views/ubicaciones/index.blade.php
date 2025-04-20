@@ -747,9 +747,12 @@
 
     /**
      * Clears any validation errors displayed on the form.
+     * Includes clearing map validation feedback.
      */
-    function clearValidationErrors() {
-         if (!formUbicacion) return;
+     function clearValidationErrors() {
+        if (!formUbicacion) return;
+
+         // Clear standard input/select errors
         formUbicacion.querySelectorAll('.invalid-feedback').forEach(el => {
             el.textContent = '';
             el.style.display = 'none';
@@ -757,18 +760,19 @@
         formUbicacion.querySelectorAll('.is-invalid').forEach(el => {
             el.classList.remove('is-invalid');
         });
-         // Also remove valid state classes if used
-         formUbicacion.querySelectorAll('.is-valid').forEach(el => {
-             el.classList.remove('is-valid');
-         });
-        if (mapCoordsFeedback) mapCoordsFeedback.style.display = 'none';
+        formUbicacion.querySelectorAll('.is-valid').forEach(el => {
+            el.classList.remove('is-valid');
+        });
 
-        // Remove potential error text color from labels
+         // Clear map specific errors
+        if (mapCoordsFeedback) mapCoordsFeedback.style.display = 'none';
+        if (mapSelectorDiv) mapSelectorDiv.style.borderColor = '#ccc'; // Reset border color
+
+        // Remove text-danger class from labels
         formUbicacion.querySelectorAll('.form-label').forEach(label => {
             label.classList.remove('text-danger');
         });
     }
-
 
     // =========================================================================
     // Global Functions (called from HTML onclick)
@@ -947,6 +951,339 @@
     }
 
 
+
+
+    // =========================================================================
+    // Helper Functions - Form Handling (Validación y Envío)
+    // =========================================================================
+
+    // (Mantén las funciones fetchTypes, populateTypesSelect, resetForm, clearValidationErrors aquí)
+
+    /**
+     * Performs client-side validation on the ubicacion form.
+     * Adds Bootstrap/Metronic validation classes and feedback messages.
+     * @returns {boolean} - True if the form is valid, false otherwise.
+     */
+     function validateForm() {
+        if (!formUbicacion) return false; // Cannot validate if form element is missing
+
+        clearValidationErrors(); // Clear previous errors
+
+        let isValid = true;
+
+        // --- Validate Nombre ---
+        const nombreInput = document.getElementById('nombre');
+        const nombreFeedback = nombreInput ? formUbicacion.querySelector('#nombre + .invalid-feedback') : null;
+        if (nombreInput && nombreInput.value.trim() === '') {
+            isValid = false;
+            nombreInput.classList.add('is-invalid');
+            if (nombreFeedback) {
+                 nombreFeedback.textContent = 'El nombre es obligatorio.';
+                 nombreFeedback.style.display = 'block';
+            }
+            // Find label and add text-danger class
+             const nombreLabel = formUbicacion.querySelector('label[for="nombre"]');
+             if (nombreLabel) nombreLabel.classList.add('text-danger');
+
+        } else {
+            if (nombreInput) {
+                 nombreInput.classList.remove('is-invalid');
+                 const nombreLabel = formUbicacion.querySelector('label[for="nombre"]');
+                 if (nombreLabel) nombreLabel.classList.remove('text-danger');
+            }
+             if (nombreFeedback) nombreFeedback.style.display = 'none';
+        }
+
+        // --- Validate Tipo ---
+        const tipoSelect = document.getElementById('tipo_id');
+        const tipoFeedback = tipoSelect ? formUbicacion.querySelector('#tipo_id + .invalid-feedback') : null;
+        if (tipoSelect && (tipoSelect.value === '' || tipoSelect.value === null)) {
+             // Note: Select2 adds a hidden select and wraps the original. Validation
+             // should target the original select element.
+            isValid = false;
+            tipoSelect.classList.add('is-invalid');
+            if (tipoFeedback) {
+                 tipoFeedback.textContent = 'Debes seleccionar un tipo.';
+                 tipoFeedback.style.display = 'block';
+            }
+            // Find label and add text-danger class
+            const tipoLabel = formUbicacion.querySelector('label[for="tipo_id"]');
+            if (tipoLabel) tipoLabel.classList.add('text-danger');
+
+        } else {
+             if (tipoSelect) {
+                 tipoSelect.classList.remove('is-invalid');
+                 const tipoLabel = formUbicacion.querySelector('label[for="tipo_id"]');
+                 if (tipoLabel) tipoLabel.classList.remove('text-danger');
+             }
+             if (tipoFeedback) tipoFeedback.style.display = 'none';
+        }
+
+
+        // --- Validate Estado ---
+        const estadoSelect = document.getElementById('estado');
+         const estadoFeedback = estadoSelect ? formUbicacion.querySelector('#estado + .invalid-feedback') : null;
+        if (estadoSelect && (estadoSelect.value === '' || estadoSelect.value === null)) {
+            isValid = false;
+            estadoSelect.classList.add('is-invalid');
+            if (estadoFeedback) {
+                 estadoFeedback.textContent = 'Debes seleccionar un estado.';
+                 estadoFeedback.style.display = 'block';
+            }
+             // Find label and add text-danger class
+             const estadoLabel = formUbicacion.querySelector('label[for="estado"]');
+             if (estadoLabel) estadoLabel.classList.add('text-danger');
+
+        } else {
+             if (estadoSelect) {
+                 estadoSelect.classList.remove('is-invalid');
+                 const estadoLabel = formUbicacion.querySelector('label[for="estado"]');
+                 if (estadoLabel) estadoLabel.classList.remove('text-danger');
+             }
+             if (estadoFeedback) estadoFeedback.style.display = 'none';
+        }
+
+        // --- Validate Coordinates ---
+        // Check if mapSelectorDiv and the hidden inputs exist before validating map coords
+         if (mapSelectorDiv && latitudeHiddenInput && longitudeHiddenInput) {
+            const latValue = latitudeHiddenInput.value;
+            const lonValue = longitudeHiddenInput.value;
+
+            if (latValue === '' || lonValue === '' || isNaN(parseFloat(latValue)) || isNaN(parseFloat(lonValue))) {
+                isValid = false;
+                mapSelectorDiv.style.borderColor = 'red';
+                 if (mapCoordsFeedback) {
+                      mapCoordsFeedback.textContent = 'Por favor, selecciona una ubicación en el mapa.'; // Match HTML message
+                      mapCoordsFeedback.style.display = 'block';
+                 }
+                  // Find the label for the map section and add text-danger class
+                 const mapLabel = formUbicacion.querySelector('.form-label[for="mapSelector"]'); // Assuming you might add a 'for' or similar
+                 if (!mapLabel) {
+                      // Fallback: find the label text "Selecciona la ubicación en el mapa:"
+                      const labels = formUbicacion.querySelectorAll('.form-label');
+                      for (const label of labels) {
+                           if (label.textContent.includes('Selecciona la ubicación en el mapa')) {
+                                mapLabel = label;
+                                break;
+                           }
+                      }
+                 }
+                 if (mapLabel) mapLabel.classList.add('text-danger');
+
+            } else {
+                mapSelectorDiv.style.borderColor = '#ccc'; // Reset border
+                if (mapCoordsFeedback) mapCoordsFeedback.style.display = 'none';
+                 const mapLabel = formUbicacion.querySelector('.form-label.text-danger'); // Remove if it was added
+                  if (mapLabel) mapLabel.classList.remove('text-danger'); // Use a more specific selector if needed
+            }
+         } else {
+             // If map elements are missing, maybe show a console error, but don't fail validation
+             console.error("Elementos del mapa no encontrados para validación de coordenadas.");
+         }
+
+
+        return isValid;
+    }
+
+
+    /**
+     * Handles the form submission (create or update).
+     * @param {Event} event - The submit event.
+     */
+    async function handleFormSubmit(event) {
+        event.preventDefault(); // Prevent default form submission
+
+        if (!validateForm()) {
+            console.log("Validación fallida.");
+            Swal.fire({
+                 icon: 'error',
+                 title: 'Error de validación',
+                 text: 'Por favor, corrige los errores en el formulario.',
+                 confirmButtonText: 'Entendido'
+            });
+            return; // Stop if validation fails
+        }
+
+        const submitButton = document.getElementById('submitButton');
+         if (submitButton) {
+            submitButton.setAttribute('data-kt-indicator', 'on'); // Show loading indicator
+            submitButton.disabled = true; // Disable button
+         }
+
+        // Create FormData object to easily include files and other form data
+        const formData = new FormData(formUbicacion);
+
+        let method = 'POST';
+        let url = '/ubicaciones'; // Endpoint for creation
+
+        // If editing, change method and URL
+        if (editingUbicacionId) {
+            method = 'POST'; // Use POST for FormData with _method=PUT
+            url = `/ubicaciones/${editingUbicacionId}`; // Endpoint for update
+            formData.append('_method', 'PUT'); // Laravel convention for PUT/PATCH requests via form
+        }
+
+        // Include CSRF token in headers for non-FormData POST/PUT,
+        // but FormData already handles standard form fields including the @csrf input.
+        // Adding it to headers is belt-and-suspenders and fine.
+        const headers = {
+            'Accept': 'application/json', // Expect JSON response
+             // No 'Content-Type': 'multipart/form-data' header when using FormData; fetch sets it automatically
+        };
+
+        // Add CSRF token to headers if available
+        if (csrfToken) {
+             headers['X-CSRF-TOKEN'] = csrfToken;
+        }
+
+
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: headers,
+                body: formData // FormData object includes file and all inputs
+            });
+
+            if (!response.ok) {
+                 // Handle validation errors (status 422) specifically
+                 if (response.status === 422) {
+                      const errors = await response.json();
+                      displayValidationErrors(errors.errors); // Call a new function to display errors
+                      Swal.fire({
+                           icon: 'error',
+                           title: 'Error de validación',
+                           text: 'Por favor, revisa los campos marcados.',
+                           confirmButtonText: 'Entendido'
+                      });
+                      // Do NOT hide the modal on validation errors
+                      return; // Stop here
+                 }
+                 // Handle other HTTP errors
+                 throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Handle success response
+            const result = await response.json(); // Or response.text() if your backend doesn't return JSON on success
+
+            Swal.fire(
+                '¡Guardado!',
+                `Ubicación ${editingUbicacionId ? 'actualizada' : 'creada'} correctamente.`,
+                'success'
+            );
+
+            // Hide the modal
+            let modalElement = modalForm ? KTModal.getInstance(modalForm) : null;
+            if (modalElement) {
+                modalElement.hide(); // This will also trigger the 'hide' listener and resetForm()
+            }
+
+            // Refresh the data table
+            fetchUbicaciones();
+
+        } catch (error) {
+            console.error('Error saving ubicacion:', error);
+            const errorMessage = error.message || 'Ocurrió un error al guardar la ubicación.';
+            Swal.fire(
+                '¡Error!',
+                errorMessage,
+                'error'
+            );
+             // Do NOT hide the modal on general errors, user might want to retry
+        } finally {
+            // Hide loading indicator and re-enable button in all cases (success, validation error, other error)
+             if (submitButton) {
+                 submitButton.removeAttribute('data-kt-indicator');
+                 submitButton.disabled = false;
+             }
+        }
+    }
+
+
+     /**
+      * Displays validation errors received from the backend API (status 422).
+      * @param {object} errors - An object where keys are field names and values are arrays of error messages.
+      */
+     function displayValidationErrors(errors) {
+          clearValidationErrors(); // Start fresh
+
+          if (!errors) return;
+
+          // Map backend field names to frontend input IDs/handling
+          const fieldMap = {
+               'nombre': { id: 'nombre', isMapCoord: false },
+               'tipo_id': { id: 'tipo_id', isMapCoord: false },
+               'estado': { id: 'estado', isMapCoord: false },
+               'latitude': { id: 'latitudeHidden', isMapCoord: true }, // Map coords to their hidden inputs
+               'longitude': { id: 'longitudeHidden', isMapCoord: true },
+               // Add other fields here if needed
+          };
+
+          for (const fieldName in errors) {
+               if (errors.hasOwnProperty(fieldName)) {
+                    const fieldErrors = errors[fieldName]; // Array of messages for this field
+                    const errorText = fieldErrors.join(', '); // Join multiple messages
+
+                    const mappedField = fieldMap[fieldName];
+
+                    if (mappedField) {
+                         if (mappedField.isMapCoord) {
+                              // Handle map coordinate errors
+                              if (mapSelectorDiv) mapSelectorDiv.style.borderColor = 'red';
+                              if (mapCoordsFeedback) {
+                                   mapCoordsFeedback.textContent = errorText;
+                                   mapCoordsFeedback.style.display = 'block';
+                              }
+                              // Also mark the map label if you added text-danger in validateForm
+                              const mapLabel = formUbicacion.querySelector('.form-label.text-danger'); // Find if it was already marked
+                              if (!mapLabel) { // If not already marked (e.g., no client-side validation ran)
+                                   const labels = formUbicacion.querySelectorAll('.form-label');
+                                   for (const label of labels) {
+                                        if (label.textContent.includes('Selecciona la ubicación en el mapa')) {
+                                             label.classList.add('text-danger');
+                                             break;
+                                        }
+                                   }
+                              }
+
+                         } else {
+                              // Handle standard input/select errors
+                              const inputElement = document.getElementById(mappedField.id);
+                              if (inputElement) {
+                                   inputElement.classList.add('is-invalid');
+                                   // Find the feedback element (assuming it's sibling or nearby)
+                                   let feedbackElement = inputElement.nextElementSibling;
+                                    while(feedbackElement && !feedbackElement.classList.contains('invalid-feedback')) {
+                                         feedbackElement = feedbackElement.nextElementSibling;
+                                    }
+                                   // If not found as sibling, try searching within the form
+                                    if (!feedbackElement) {
+                                         feedbackElement = formUbicacion.querySelector(`#${mappedField.id} + .invalid-feedback`);
+                                    }
+
+
+                                   if (feedbackElement) {
+                                        feedbackElement.textContent = errorText;
+                                        feedbackElement.style.display = 'block';
+                                   }
+
+                                   // Add text-danger class to the label
+                                   const labelElement = formUbicacion.querySelector(`label[for="${mappedField.id}"]`);
+                                   if (labelElement) labelElement.classList.add('text-danger');
+                              } else {
+                                  console.warn(`Validation error for unknown element ID: ${mappedField.id}`);
+                              }
+                         }
+                    } else {
+                         // Handle errors for fields not explicitly mapped (e.g., 'imagen_destacada')
+                         // For file input, Metronic's ImageInput might need specific error handling.
+                         // A general approach is to log or show a generic message.
+                         console.warn(`Backend validation error for unmapped field "${fieldName}": ${errorText}`);
+                         // You might want to show a general error message for unmapped fields
+                         // or try to find the relevant part of the form to highlight.
+                    }
+               }
+          }
+     }
     // =========================================================================
     // DOM Ready
     // =========================================================================
@@ -1041,6 +1378,14 @@
 
         // Initial fetch of data table data
         fetchUbicaciones();
+
+
+        // === Add form submit listener ===
+         if (formUbicacion) {
+             formUbicacion.addEventListener('submit', handleFormSubmit);
+        } else {
+             console.error("Elemento form #formUbicacion no encontrado. No se puede añadir listener de submit.");
+        }
     });
 
 </script>
