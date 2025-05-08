@@ -28,27 +28,24 @@
                                             <th class="min-w-[200px]">
                                                 <span class="sort asc">
                                                     <span class="sort-label">Nombre</span>
-                                                    <span class="sort-icon"></span>
                                                 </span>
                                             </th>
                                             <th class="min-w-[150px]">
                                                 <span class="sort">
                                                     <span class="sort-label">Tipo</span>
-                                                    <span class="sort-icon"></span>
                                                 </span>
                                             </th>
                                             <th class="min-w-[100px]">
                                                 <span class="sort">
                                                     <span class="sort-label">Destacada</span>
-                                                    <span class="sort-icon"></span>
                                                 </span>
                                             </th>
                                             <th class="min-w-[100px]">
                                                 <span class="sort">
                                                     <span class="sort-label">Estado</span>
-                                                    <span class="sort-icon"></span>
                                                 </span>
                                             </th>
+                                            <th class="min-w-[80px] text-center">Galería</th>
                                             <th class="min-w-[100px]">Acciones</th>
                                         </tr>
                                     </thead>
@@ -92,7 +89,7 @@
                     @csrf
                     <div class="modal-header">
                         <h5 class="modal-title" id="createUbicacionModalLabel">Crear Nueva Ubicación</h5>
-                        <button type="button" class="btn btn-sm btn-icon btn-light btn-active-light-primary me-n5" data-bs-dismiss="modal" aria-label="Close">
+                        <button type="button" class="btn btn-sm btn-icon btn-light btn-active-light-primary me-n5" data-modal-dismiss="true"" aria-label="Close">
                             <i class="ki-filled ki-cross-square"></i>
                         </button>
                     </div>
@@ -110,8 +107,6 @@
                                 <select id="tipo_id" name="tipo_id" class="select" data-control="select2" data-dropdown-parent="#createUbicacionModal" data-placeholder="Seleccione un tipo..." required>
                                     <option></option>
                                     {{-- Carga dinámica de opciones --}}
-                                    <option value="1">Tipo 1 (Ejemplo)</option>
-                                    <option value="2">Tipo 2 (Ejemplo)</option>
                                 </select>
                                 <div class="fv-plugins-message-container invalid-feedback"></div>
                             </div>
@@ -138,28 +133,21 @@
                                 <textarea id="descripcion" name="descripcion" class="textarea" placeholder="Añada una descripción..." rows="3"></textarea>
                             </div>
 
-                            <div class="md:col-span-2 flex flex-col justify-center items-center">
-                                <label class="form-label self-start">Imagen Destacada</label>
-                                <div class="image-input size-16" data-image-input="true">
-                                    {{-- Asegúrate que el name="imagen_destacada" sea correcto --}}
-                                    <input accept=".png, .jpg, .jpeg" name="imagen_destacada" type="file"/>
-                                    <input name="imagen_destacada_remove" type="hidden"/>
-                                    <div class="btn btn-icon btn-icon-xs btn-light shadow-default absolute z-1 size-5 -top-0.5 -right-0.5 rounded-full" data-image-input-remove="" data-tooltip="#image_input_tooltip" data-tooltip-trigger="hover">
-                                        <i class="ki-outline ki-cross"></i>
-                                    </div>
-                                    <span class="tooltip" id="image_input_tooltip">Click para quitar</span>
-                                    <div class="image-input-placeholder rounded-full border-2 border-success image-input-empty:border-gray-300" style="background-image:url(/static/metronic/tailwind/docs/dist/assets/media/avatars/blank.png)">
-                                        <div class="image-input-preview rounded-full"></div>
-                                        <div class="flex items-center justify-center cursor-pointer h-5 left-0 right-0 bottom-0 bg-dark-clarity absolute">
-                                            <svg class="fill-light opacity-80" height="12" viewbox="0 0 14 12" width="14" xmlns="http://www.w3.org/2000/svg">
-                                                <path d="M11.6665 2.64585H11.2232C11.0873 2.64749 10.9538 2.61053 10.8382 2.53928C10.7225 2.46803 10.6295 2.36541 10.5698 2.24335L10.0448 1.19918C9.91266 0.931853 9.70808 0.707007 9.45438 0.550249C9.20068 0.393491 8.90806 0.311121 8.60984 0.312517H5.38984C5.09162 0.311121 4.799 0.393491 4.5453 0.550249C4.2916 0.707007 4.08701 0.931853 3.95484 1.19918L3.42984 2.24335C3.37021 2.36541 3.27716 2.46803 3.1615 2.53928C3.04584 2.61053 2.91234 2.64749 2.7765 2.64585H2.33317C1.90772 2.64585 1.49969 2.81486 1.19885 3.1157C0.898014 3.41654 0.729004 3.82457 0.729004 4.25002V10.0834C0.729004 10.5088 0.898014 10.9168 1.19885 11.2177C1.49969 11.5185 1.90772 11.6875 2.33317 11.6875H11.6665C12.092 11.6875 12.5 11.5185 12.8008 11.2177C13.1017 10.9168 13.2707 10.5088 13.2707 10.0834V4.25002C13.2707 3.82457 13.1017 3.41654 12.8008 3.1157C12.5 2.81486 12.092 2.64585 11.6665 2.64585ZM6.99984 9.64585C6.39413 9.64585 5.80203 9.46624 5.2984 9.12973C4.79478 8.79321 4.40225 8.31492 4.17046 7.75532C3.93866 7.19572 3.87802 6.57995 3.99618 5.98589C4.11435 5.39182 4.40602 4.84613 4.83432 4.41784C5.26262 3.98954 5.80831 3.69786 6.40237 3.5797C6.99644 3.46153 7.61221 3.52218 8.1718 3.75397C8.7314 3.98576 9.2097 4.37829 9.54621 4.88192C9.88272 5.38554 10.0623 5.97765 10.0623 6.58335C10.0608 7.3951 9.73765 8.17317 9.16365 8.74716C8.58965 9.32116 7.81159 9.64431 6.99984 9.64585Z" fill=""></path>
-                                                <path d="M7 8.77087C8.20812 8.77087 9.1875 7.7915 9.1875 6.58337C9.1875 5.37525 8.20812 4.39587 7 4.39587C5.79188 4.39587 4.8125 5.37525 4.8125 6.58337C4.8125 7.7915 5.79188 8.77087 7 8.77087Z" fill=""></path>
-                                            </svg>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <div class="md:col-span-2 flex flex-col justify-center items-center p-4">
 
+                                <label class="form-label self-start mb-2 font-medium text-gray-700">Imagen Destacada</label>
+
+                                <label for="imagen_destacada_input" class="cursor-pointer block mb-4">
+                                    <div class="w-32 h-32 rounded-full overflow-hidden border-2 border-gray-300 bg-gray-200 flex items-center justify-center hover:border-blue-500 transition-colors duration-200">
+                                        <img id="imagePreview"
+                                            src="https://via.placeholder.com/150/CCCCCC/808080?text=Click+aqu%C3%AD" alt="Vista previa de imagen destacada"
+                                            class="w-full h-full object-cover">
+                                    </div>
+                                </label>
+
+                                <input class="file-input hidden" type="file" name="imagen_destacada" id="imagen_destacada_input" accept="image/*" />
+
+                            </div>
                             {{-- SECCIÓN PARA EL MAPA --}}
                             <div class="col-span-2 md:col-span-4 flex flex-col gap-y-2 mt-3">
                                 <label class="form-label required">Selecciona la ubicación en el mapa:</label>
@@ -182,7 +170,7 @@
                         </div> {{-- Fin del grid principal --}}
                     </div> {{-- Fin del modal-body --}}
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-light" data-modal-dismiss="true"">Cerrar</button>
                         {{-- Botón de submit con indicador de carga (Metronic) --}}
                         <button type="submit" id="submitButton" class="btn btn-primary">
                             <span class="indicator-label">Guardar Ubicación</span>
@@ -192,11 +180,41 @@
             </div>
         </div>
     </div>
+
+    <div id="imageGalleryModal" class="fixed inset-0 bg-black bg-opacity-60 hidden flex items-center justify-center z-[1055] p-4 transition-opacity duration-300 ease-in-out" aria-labelledby="galleryModalTitle" role="dialog" aria-modal="true">
+        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col transform transition-all duration-300 ease-in-out scale-95 opacity-0" id="galleryModalContent">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-200 pb-3">
+                <h2 id="galleryModalTitle" class="text-2xl font-semibold text-gray-800">Galería de Imágenes - <span id="galleryUbicacionNombre"></span></h2>
+                <button id="closeGalleryModalBtn" class="text-gray-400 hover:text-gray-700 text-3xl leading-none font-semibold outline-none focus:outline-none" aria-label="Cerrar modal de galería">&times;</button>
+            </div>
+
+            {{-- Contenedor de la Galería (con scroll y grid responsive) --}}
+            <div id="galleryImageContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 overflow-y-auto flex-grow mb-5 pr-2 custom-scrollbar">
+                <div id="galleryLoadingIndicator" class="col-span-full text-center py-10 text-gray-500">Cargando imágenes...</div>
+            </div>
+
+            {{-- Sección para agregar nuevas imágenes --}}
+            <div class="mt-auto pt-4 border-t border-gray-200">
+                <label for="addGalleryImageInput" class="block mb-2 text-sm font-medium text-gray-700">Agregar nueva imagen:</label>
+                <div class="flex items-center gap-2 bg-gray-50 border border-gray-300 rounded-lg p-2">
+                    <input type="file" id="addGalleryImageInput" accept="image/*" class="block w-full text-sm text-gray-900 cursor-pointer focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                </div>
+                 <p class="text-xs text-gray-500 mt-1">Selecciona un archivo de imagen (jpg, png, gif, etc.). La subida comenzará automáticamente.</p>
+              
+                 <div id="galleryUploadIndicator" class="text-sm text-blue-600 mt-2 hidden">
+                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-blue-600 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Subiendo imagen...
+                 </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
-{{-- Incluye esto en tu @push('scripts') o al final del body --}}
 @push('scripts') 
-{{-- 1. Carga la API de Google Maps (REEMPLAZA TU_API_KEY) --}}
+
 <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&libraries=marker">
 </script>
 
@@ -233,7 +251,7 @@
     const paginationControlsDiv = document.getElementById('paginationControls');
     const apiUrl = '/ubicaciones/getPaginate'; // API endpoint for data table
     let currentPage = 1;
-    let itemsPerPage = parseInt(perPageSelect ? perPageSelect.value : 10); // Default to 10 if select not found
+    let itemsPerPage = parseInt(perPageSelect ? perPageSelect.value : 10);
     let searchQuery = '';
 
     // --- Default Map Coords/Zoom (Girardot - Peñon) ---
@@ -242,6 +260,28 @@
 
      // --- API Endpoint for Types ---
      const typesApiUrl = '/tipoUbi/all';
+
+      // Variables para la Vista Previa de Imagen Circular <===
+    const imageUploadInput = document.getElementById('imagen_destacada_input'); 
+    const imagePreviewElement = document.getElementById('imagePreview');    
+    const defaultImageUrl = 'https://camarasal.com/wp-content/uploads/2020/08/default-image-5-1.jpg'; 
+
+    // Variables para la Galería de Imágenes <===
+    const imageGalleryModal = document.getElementById('imageGalleryModal');
+    const galleryModalContent = document.getElementById('galleryModalContent');
+    const closeGalleryModalBtn = document.getElementById('closeGalleryModalBtn');
+    const galleryImageContainer = document.getElementById('galleryImageContainer');
+    const addGalleryImageInput = document.getElementById('addGalleryImageInput');
+    const galleryUbicacionNombreSpan = document.getElementById('galleryUbicacionNombre');
+    const galleryLoadingIndicator = document.getElementById('galleryLoadingIndicator');
+    const galleryUploadIndicator = document.getElementById('galleryUploadIndicator');
+
+    let currentGalleryUbicacionId = null; 
+    let currentGalleryImages = [];
+    let galleryDraggedItem = null; 
+    let galleryDragStartIndex = -1; 
+
+    const galleryBaseUrl = '/ubicaciones/{ubicacionId}';
 
 
 
@@ -264,54 +304,87 @@
             return;
         }
 
-        mapSelectorDiv.innerHTML = ''; // Clear loading message
 
         if (!mapSelectorInstance) {
+            // --- Solo se ejecuta la PRIMERA VEZ que se abre el modal ---
+            console.log("Creando NUEVA instancia de mapa.");
+
+            mapSelectorDiv.innerHTML = ''; // Limpia mensaje de carga SOLO la primera vez
+
             const mapOptions = {
                 zoom: defaultZoom,
-                center: initialCoords,
-                mapTypeId: 'roadmap',
+                center: initialCoords, // Centra inicialmente
+                mapTypeId: 'satellite',
                 streetViewControl: false,
                 fullscreenControl: false,
                 mapTypeControl: false,
                 scaleControl: false,
                 rotateControl: false,
                 zoomControl: true,
-                styles: [{ featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] }] // Hide points of interest
+                styles: [{ featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] }]
             };
             mapSelectorInstance = new google.maps.Map(mapSelectorDiv, mapOptions);
 
-            // Listener for map click to place marker
+            // Listener para click en el mapa (solo se añade una vez)
             mapSelectorInstance.addListener("click", (event) => {
                 placeSelectorMarkerAndUpdateFields(event.latLng);
             });
-        } else {
-            mapSelectorInstance.setCenter(initialCoords);
-            mapSelectorInstance.setZoom(defaultZoom);
+
         }
 
-        // Place initial marker if coords are provided (for editing)
+        // --- LÓGICA COMÚN: Se ejecuta SIEMPRE que se muestra el modal ---
+        // (Tanto la primera vez como las siguientes)
+
+        console.log("Ajustando mapa existente o recién creado.", initialCoords);
+
+        // Asegura que el centro y zoom estén correctos ANTES del resize
+        mapSelectorInstance.setCenter(initialCoords);
+        mapSelectorInstance.setZoom(defaultZoom);
+
+        // Manejo del marcador: Ponerlo si son coords de edición, quitarlo si son las default
         if (initialCoords.lat !== defaultCoords.lat || initialCoords.lng !== defaultCoords.lng) {
-            placeSelectorMarkerAndUpdateFields(initialCoords, true);
+            // Estamos editando o recibimos coords específicas
+            console.log("Colocando marcador para edición/coords específicas.");
+            // Asegúrate de pasar un objeto google.maps.LatLng o un objeto {lat, lng} válido
+            const positionForMarker = (typeof initialCoords.lat === 'function')
+                                      ? initialCoords // Ya es un LatLng
+                                      : new google.maps.LatLng(initialCoords.lat, initialCoords.lng); // Crear uno
+            placeSelectorMarkerAndUpdateFields(positionForMarker, true); // Coloca/mueve el marcador
         } else {
+            // Estamos creando nuevo (coords default)
+            console.log("Quitando marcador existente (si lo hay) para modo creación.");
             if (mapSelectorMarker) {
-                mapSelectorMarker.setMap(null); // Remove existing marker
-                mapSelectorMarker = null;
+                mapSelectorMarker.setMap(null); // Quita el marcador del mapa
+                mapSelectorMarker = null;       // Limpia la referencia
             }
+            // Limpia los campos de coordenadas y display
+            if (latitudeHiddenInput) latitudeHiddenInput.value = '';
+            if (longitudeHiddenInput) longitudeHiddenInput.value = '';
+            if (selectedLatDisplay) selectedLatDisplay.textContent = 'N/A';
+            if (selectedLonDisplay) selectedLonDisplay.textContent = 'N/A';
+            if (mapCoordsFeedback) mapCoordsFeedback.style.display = 'none';
+            if (mapSelectorDiv) mapSelectorDiv.style.borderColor = '#ccc'; // Reset border
         }
 
-        // Trigger resize to ensure map displays correctly in modal
-        google.maps.event.trigger(mapSelectorInstance, 'resize');
-        mapSelectorInstance.setCenter(initialCoords); // Set center again after resize
+        // --- CLAVE: Forzar redibujo y re-centrado DESPUÉS de que el modal sea visible ---
+        // Usamos setTimeout para darle una mínima oportunidad al navegador de renderizar el modal
+        setTimeout(() => {
+            if (mapSelectorInstance) { // Doble chequeo por si acaso
+                console.log("Disparando resize y re-centrando DENTRO de setTimeout.");
+                google.maps.event.trigger(mapSelectorInstance, 'resize');
+                mapSelectorInstance.setCenter(initialCoords); // Re-centra DESPUÉS del resize
+            }
+        }, 100); // Aumenté un poco el tiempo por si acaso, puedes probar con 50 o 150
     }
 
-/**
+
+    /**
      * Places or updates the map marker and updates related form fields/displays.
      * Accepts both google.maps.LatLng objects (from map clicks) and plain {lat, lng} objects.
      * @param {google.maps.LatLng|object} latLng - The coordinates for the marker.
      * @param {boolean} [updateHiddenFields=true] - Whether to update the hidden input fields and display spans.
      */
-     function placeSelectorMarkerAndUpdateFields(latLng, updateHiddenFields = true) {
+    function placeSelectorMarkerAndUpdateFields(latLng, updateHiddenFields = true) {
         let lat, lng;
 
         if (!latLng) {
@@ -319,73 +392,89 @@
             return;
         }
 
-        // Get lat and lng values, handling both function (google.maps.LatLng) and property access
-        if (typeof latLng.lat === 'function' && typeof latLng.lng === 'function') {
-            lat = latLng.lat();
-            lng = latLng.lng();
-        } else if (typeof latLng.lat === 'number' && typeof latLng.lng === 'number') {
-            lat = latLng.lat;
-            lng = latLng.lng;
-        } else {
-             console.warn("Coordenadas con formato inválido para el marcador:", latLng);
-             return;
+        // Extraer lat y lng, asegurando que sean números
+        try {
+            if (typeof latLng.lat === 'function' && typeof latLng.lng === 'function') {
+                lat = latLng.lat();
+                lng = latLng.lng();
+            } else if (typeof latLng.lat === 'number' && typeof latLng.lng === 'number') {
+                lat = latLng.lat;
+                lng = latLng.lng;
+            } else {
+                 console.warn("Coordenadas con formato inválido para el marcador:", latLng);
+                 return;
+            }
+
+             // Convertir a float por si acaso vienen como strings de la DB
+             lat = parseFloat(lat);
+             lng = parseFloat(lng);
+
+            if (isNaN(lat) || isNaN(lng)) {
+                throw new Error("Coordenadas calculadas no son números válidos.");
+            }
+
+        } catch (e) {
+            console.error("Error procesando coordenadas:", e, latLng);
+            // Opcional: Mostrar un error al usuario
+            // Swal.fire('Error', 'Las coordenadas recibidas no son válidas.', 'error');
+            return; // Salir si las coordenadas no son válidas
         }
 
-         // Ensure lat and lng are valid numbers before proceeding
-         if (isNaN(lat) || isNaN(lng)) {
-              console.warn("Coordenadas calculadas no son números válidos:", { lat, lng });
-              return;
-         }
 
+        // console.log("Posición para marcador:", {lat, lng});
 
-        // The rest of the function logic remains the same, using the extracted `lat` and `lng` variables.
-        // Now, use the extracted `lat` and `lng` values
-        const position = new google.maps.LatLng(lat, lng); // Create a LatLng object for the marker
-        if (mapSelectorInstance) { // Ensure map instance exists before adding marker
+        const position = new google.maps.LatLng(lat, lng); // Crear objeto LatLng
+
+        if (mapSelectorInstance) { // Asegurar que la instancia del mapa exista
              if (mapSelectorMarker === null) {
+                 // Crear nuevo marcador
                  mapSelectorMarker = new google.maps.Marker({
-                     position: position, // Use the new position object
+                     position: position,
                      map: mapSelectorInstance,
                      draggable: true,
                      title: "Ubicación seleccionada (arrastra para ajustar)"
                  });
 
-                 // Listener for marker drag end
+                 // Listener para marker drag end (solo se añade una vez)
                  mapSelectorMarker.addListener('dragend', (event) => {
                      if (event.latLng) {
-                         // The dragend event provides a google.maps.LatLng object
+                         // El evento dragend proporciona un objeto google.maps.LatLng
                          placeSelectorMarkerAndUpdateFields(event.latLng);
                      }
                  });
 
              } else {
-                 mapSelectorMarker.setPosition(position); // Use the new position object
+                 // Mover marcador existente
+                 mapSelectorMarker.setPosition(position);
              }
         } else {
              console.warn("No se pudo colocar el marcador: la instancia del mapa no existe.");
-             return; // Can't place marker without a map
+             return; // No se puede colocar marcador sin mapa
         }
 
 
         if (updateHiddenFields) {
-            if (latitudeHiddenInput) latitudeHiddenInput.value = lat;
-            if (longitudeHiddenInput) longitudeHiddenInput.value = lng;
-            if (selectedLatDisplay) selectedLatDisplay.textContent = lat.toFixed(6);
-            if (selectedLonDisplay) selectedLonDisplay.textContent = lng.toFixed(6);
+             if (latitudeHiddenInput) latitudeHiddenInput.value = lat;
+             if (longitudeHiddenInput) longitudeHiddenInput.value = lng;
+             if (selectedLatDisplay) selectedLatDisplay.textContent = lat.toFixed(6);
+             if (selectedLonDisplay) selectedLonDisplay.textContent = lng.toFixed(6);
 
-            // Clear map validation feedback
-            if (mapCoordsFeedback && mapCoordsFeedback.style.display === 'block') {
-                mapCoordsFeedback.style.display = 'none';
-            }
-            if (mapSelectorDiv && mapSelectorDiv.style.borderColor === 'red') {
-                mapSelectorDiv.style.borderColor = '#ccc';
-            }
+             // Limpiar feedback de validación del mapa
+             if (mapCoordsFeedback && mapCoordsFeedback.style.display === 'block') {
+                 mapCoordsFeedback.style.display = 'none';
+             }
+             if (mapSelectorDiv && mapSelectorDiv.style.borderColor === 'red') {
+                 mapSelectorDiv.style.borderColor = '#ccc';
+             }
+             // Limpiar clase de error del label si existe
+             const mapLabel = formUbicacion.querySelector('.form-label.text-danger');
+             if (mapLabel && mapLabel.textContent.includes('Selecciona la ubicación en el mapa')) {
+                mapLabel.classList.remove('text-danger');
+             }
         }
     }
 
-    /**
-     * Resets the map and associated coordinate fields to default state.
-     */
+    // En la función resetMapAndCoords:
     function resetMapAndCoords() {
         if (latitudeHiddenInput) latitudeHiddenInput.value = '';
         if (longitudeHiddenInput) longitudeHiddenInput.value = '';
@@ -393,15 +482,13 @@
         if (selectedLonDisplay) selectedLonDisplay.textContent = 'N/A';
         if (mapCoordsFeedback) mapCoordsFeedback.style.display = 'none';
         if (mapSelectorDiv) mapSelectorDiv.style.borderColor = '#ccc';
+
+        // Solo quita el marcador de la instancia actual y limpia la variable
         if (mapSelectorMarker) {
             mapSelectorMarker.setMap(null);
             mapSelectorMarker = null;
         }
-
-        if (mapSelectorInstance) {
-            mapSelectorInstance.setCenter(defaultCoords);
-            mapSelectorInstance.setZoom(defaultZoom);
-        }
+        // NO destruir mapSelectorInstance aquí
     }
 
     // =========================================================================
@@ -487,15 +574,30 @@
                         ${ubicacion.estado}
                     </span>
                 </td>
-                 <td>
-                    <button class="btn btn-sm btn-warning" title="Editar" onclick="window.editUbicacion(${ubicacion.id})">
+        
+            `;
+
+            const galeriaCell = document.createElement('td');
+            galeriaCell.classList.add('text-center'); 
+            const galeriaButton = document.createElement('button');
+            galeriaButton.classList.add('btn', 'btn-3xl', 'btn-light-info', 'btn-icon');
+            galeriaButton.title = `Abrir galería de ${ubicacion.nombre}`;
+            galeriaButton.dataset.ubicacionId = ubicacion.id; 
+            galeriaButton.dataset.ubicacionNombre = ubicacion.nombre; 
+            galeriaButton.innerHTML = '<i class="ki-filled ki-picture"></i>';
+            galeriaCell.appendChild(galeriaButton);
+            row.appendChild(galeriaCell);
+
+            const accionesCell = document.createElement('td');
+            accionesCell.innerHTML = `
+                 <button class="btn btn-sm btn-warning" title="Editar" onclick="window.editUbicacion(${ubicacion.id})">
                         <i class="ki-filled ki-pencil"></i>
                     </button>
                     <button class="btn btn-sm btn-danger" title="Eliminar" onclick="window.deleteUbicacion(${ubicacion.id})">
                         <i class="ki-filled ki-trash"></i>
-                    </button>
-                </td>
-            `;
+                    </button>`;
+            row.appendChild(accionesCell);
+
 
             tbody.appendChild(row);
             
@@ -636,7 +738,7 @@
      // =========================================================================
     // Helper Functions - Form Handling
     // =========================================================================
-  /**
+    /**
       * Fetches the list of location types from the API.
       * @returns {Promise<Array<object>>} A promise that resolves with the list of types.
       */
@@ -704,7 +806,7 @@
     /**
      * Resets the form fields and state.
      */
-     function resetForm() {
+    function resetForm() {
         if (!formUbicacion) return;
         formUbicacion.reset();
         editingUbicacionId = null;
@@ -725,6 +827,13 @@
             if(removeBtn) removeBtn.style.display = 'none';
             if(fileInput) fileInput.value = '';
             if(removeHidden) removeHidden.value = '';
+        }
+
+        if (imagePreviewElement) {
+            imagePreviewElement.src = defaultImageUrl;
+        }
+        if (imageUploadInput) {
+            imageUploadInput.value = null; 
         }
 
         // Reset select elements (manual fallback)
@@ -749,7 +858,7 @@
      * Clears any validation errors displayed on the form.
      * Includes clearing map validation feedback.
      */
-     function clearValidationErrors() {
+    function clearValidationErrors() {
         if (!formUbicacion) return;
 
          // Clear standard input/select errors
@@ -794,7 +903,7 @@
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`/ubicaciones/${id}`, { // Use direct API URL
+                fetch(`/ubicaciones/${id}`, {
                     method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': csrfToken,
@@ -804,16 +913,14 @@
                 })
                 .then(response => {
                     if (response.status === 204) {
-                        return {}; // Handle 204 No Content
+                        return {};
                     }
                     if (!response.ok) {
-                         // Attempt to parse JSON error response
                          return response.json().then(err => { throw err; }).catch(() => {
-                              // Fallback to generic error if JSON parsing fails
                               throw new Error(`HTTP error! status: ${response.status}`);
                          });
                     }
-                    return response.json(); // For other success statuses
+                    return response.json();
                 })
                 .then(data => {
                     Swal.fire(
@@ -821,7 +928,7 @@
                         'La ubicación ha sido eliminada.',
                         'success'
                     );
-                    fetchUbicaciones(); // Refresh the table
+                    fetchUbicaciones();
                 })
                 .catch(error => {
                     console.error('Error deleting ubicacion:', error);
@@ -836,14 +943,15 @@
         });
     }
 
-/**
+    /**
      * Prepares the modal form for editing an existing ubicacion and shows the modal.
      * @param {number} id - The ID of the ubicacion to edit.
      */
      window.editUbicacion = function(id) {
-        editingUbicacionId = id;
+        
 
-        resetForm(); // Reset form and validation state
+        resetForm();
+        editingUbicacionId = id;
 
         if (modalTitle) modalTitle.textContent = 'Editar Ubicación';
         if (submitButton) {
@@ -852,19 +960,13 @@
             submitButton.classList.add('btn-warning');
         }
 
-        // Add loading indicator to button or form if desired
-        // submitButton.setAttribute('data-kt-indicator', 'on');
-        // submitButton.disabled = true;
-
-
-        fetch(`/ubicaciones/${id}`, { // Use direct API URL
+        fetch(`/ubicaciones/${id}`, {
              headers: {
                  'Accept': 'application/json'
              }
         })
         .then(response => {
-            // submitButton.removeAttribute('data-kt-indicator'); // Hide loading
-            // submitButton.disabled = false;
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -878,12 +980,11 @@
             const tipoSelect = document.getElementById('tipo_id');
             if(tipoSelect) {
                  tipoSelect.value = ubicacion.tipo_id || '';
-                 // If using a library like Select2, trigger change: $(tipoSelect).trigger('change');
             }
 
             const estadoSelect = document.getElementById('estado');
             if(estadoSelect) {
-                 estadoSelect.value = ubicacion.estado || 'Activo'; // Default to 'Activo' if null
+                 estadoSelect.value = ubicacion.estado || 'Activo'; 
             }
 
             const destacadaSelect = document.getElementById('destacada');
@@ -894,47 +995,40 @@
             const descripcionTextarea = document.getElementById('descripcion');
              if(descripcionTextarea) descripcionTextarea.value = ubicacion.descripcion || '';
 
-            // Handle image preview (manual fallback)
-             const imageInputDiv = formUbicacion.querySelector('[data-image-input="true"]');
-             if (imageInputDiv) {
-                  const previewElement = imageInputDiv.querySelector('.image-input-preview');
-                  const placeholderElement = imageInputDiv.querySelector('.image-input-placeholder');
-                  const removeBtn = imageInputDiv.querySelector('[data-image-input-remove]');
-
-                  if (ubicacion.imagen_path) {
-                       const imageUrl = '/storage/' + ubicacion.imagen_path; // Adjust URL path if needed
-                       if (previewElement) previewElement.style.backgroundImage = `url(${imageUrl})`;
-                       imageInputDiv.classList.add('image-input-changed');
-                        if (placeholderElement) placeholderElement.style.display = 'none';
-                       if(removeBtn) removeBtn.style.display = 'flex';
-                  } else {
-                       // Reset to placeholder state
-                       if (previewElement) previewElement.style.backgroundImage = '';
-                       imageInputDiv.classList.remove('image-input-changed');
-                        if (placeholderElement) placeholderElement.style.display = 'flex';
-                       if(removeBtn) removeBtn.style.display = 'none';
-                  }
-             }
+             if (imagePreviewElement) { 
+                console.log('xd');
+                console.log(ubicacion.imagen_destacada);
+                
+                if (ubicacion.imagen_destacada && ubicacion.imagen_destacada.trim() !== '') {
+                    console.log("Editando: Estableciendo src de imagen circular a:", ubicacion.imagen_destacada);
+                    const imageUrl = ubicacion.imagen_destacada;
+                    console.log("Editando: Estableciendo src de imagen circular a:", imageUrl);
+                    imagePreviewElement.src = imageUrl;
+                } else {
+                   
+                    console.log("Editando: No hay imagen_path, estableciendo src a default:", defaultImageUrl);
+                    imagePreviewElement.src = defaultImageUrl;
+                }
+            } else {
+                console.warn("#imagePreview element not found during edit setup.");
+            }
 
             // Determine coordinates to show on the map when the modal opens
             const coordsToShowMap = (ubicacion.latitud && ubicacion.longitud) ?
                                     { lat: parseFloat(ubicacion.latitud), lng: parseFloat(ubicacion.longitud) } :
                                     defaultCoords;
 
-            // Store coordinates temporarily on the modal element.
-            // The modal's 'show' listener will read this and initialize the map.
             let modalElement = modalForm ? KTModal.getInstance(modalForm) : null;
              if (modalElement) {
-                 modalElement._coordsToShowMap = coordsToShowMap; // Store coords
-                modalElement.show(); // Show the modal
+                 modalElement._coordsToShowMap = coordsToShowMap;
+                modalElement.show();
              } else {
                  console.error("Modal instance not found when trying to show for edit.");
              }
 
         })
         .catch(error => {
-             // submitButton.removeAttribute('data-kt-indicator'); // Hide loading
-             // submitButton.disabled = false;
+      
             console.error('Error fetching ubicacion for edit:', error);
             const errorMessage = error.message || 'Ocurrió un error al cargar los datos de la ubicación.';
             Swal.fire(
@@ -998,8 +1092,7 @@
         const tipoSelect = document.getElementById('tipo_id');
         const tipoFeedback = tipoSelect ? formUbicacion.querySelector('#tipo_id + .invalid-feedback') : null;
         if (tipoSelect && (tipoSelect.value === '' || tipoSelect.value === null)) {
-             // Note: Select2 adds a hidden select and wraps the original. Validation
-             // should target the original select element.
+   
             isValid = false;
             tipoSelect.classList.add('is-invalid');
             if (tipoFeedback) {
@@ -1044,7 +1137,6 @@
         }
 
         // --- Validate Coordinates ---
-        // Check if mapSelectorDiv and the hidden inputs exist before validating map coords
          if (mapSelectorDiv && latitudeHiddenInput && longitudeHiddenInput) {
             const latValue = latitudeHiddenInput.value;
             const lonValue = longitudeHiddenInput.value;
@@ -1053,13 +1145,13 @@
                 isValid = false;
                 mapSelectorDiv.style.borderColor = 'red';
                  if (mapCoordsFeedback) {
-                      mapCoordsFeedback.textContent = 'Por favor, selecciona una ubicación en el mapa.'; // Match HTML message
+                      mapCoordsFeedback.textContent = 'Por favor, selecciona una ubicación en el mapa.'; 
                       mapCoordsFeedback.style.display = 'block';
                  }
-                  // Find the label for the map section and add text-danger class
-                 const mapLabel = formUbicacion.querySelector('.form-label[for="mapSelector"]'); // Assuming you might add a 'for' or similar
+       
+                 const mapLabel = formUbicacion.querySelector('.form-label[for="mapSelector"]'); 
                  if (!mapLabel) {
-                      // Fallback: find the label text "Selecciona la ubicación en el mapa:"
+                     
                       const labels = formUbicacion.querySelectorAll('.form-label');
                       for (const label of labels) {
                            if (label.textContent.includes('Selecciona la ubicación en el mapa')) {
@@ -1071,13 +1163,12 @@
                  if (mapLabel) mapLabel.classList.add('text-danger');
 
             } else {
-                mapSelectorDiv.style.borderColor = '#ccc'; // Reset border
+                mapSelectorDiv.style.borderColor = '#ccc';
                 if (mapCoordsFeedback) mapCoordsFeedback.style.display = 'none';
-                 const mapLabel = formUbicacion.querySelector('.form-label.text-danger'); // Remove if it was added
-                  if (mapLabel) mapLabel.classList.remove('text-danger'); // Use a more specific selector if needed
+                 const mapLabel = formUbicacion.querySelector('.form-label.text-danger');
+                  if (mapLabel) mapLabel.classList.remove('text-danger');
             }
          } else {
-             // If map elements are missing, maybe show a console error, but don't fail validation
              console.error("Elementos del mapa no encontrados para validación de coordenadas.");
          }
 
@@ -1110,28 +1201,26 @@
             submitButton.disabled = true; // Disable button
          }
 
-        // Create FormData object to easily include files and other form data
         const formData = new FormData(formUbicacion);
+        console.log('Archivo imagen:', formData.get('imagen_destacada')); 
+
 
         let method = 'POST';
-        let url = '/ubicaciones'; // Endpoint for creation
+        let url = '/ubicaciones';
 
-        // If editing, change method and URL
+        console.log("Ubicacion ID para edición:", editingUbicacionId);
+        
         if (editingUbicacionId) {
-            method = 'POST'; // Use POST for FormData with _method=PUT
-            url = `/ubicaciones/${editingUbicacionId}`; // Endpoint for update
-            formData.append('_method', 'PUT'); // Laravel convention for PUT/PATCH requests via form
+            method = 'POST'; 
+            url = `/ubicaciones/${editingUbicacionId}`;
+            formData.append('_method', 'PUT');
         }
 
-        // Include CSRF token in headers for non-FormData POST/PUT,
-        // but FormData already handles standard form fields including the @csrf input.
-        // Adding it to headers is belt-and-suspenders and fine.
         const headers = {
-            'Accept': 'application/json', // Expect JSON response
-             // No 'Content-Type': 'multipart/form-data' header when using FormData; fetch sets it automatically
+            'Accept': 'application/json', 
+
         };
 
-        // Add CSRF token to headers if available
         if (csrfToken) {
              headers['X-CSRF-TOKEN'] = csrfToken;
         }
@@ -1145,25 +1234,23 @@
             });
 
             if (!response.ok) {
-                 // Handle validation errors (status 422) specifically
-                 if (response.status === 422) {
-                      const errors = await response.json();
-                      displayValidationErrors(errors.errors); // Call a new function to display errors
-                      Swal.fire({
-                           icon: 'error',
-                           title: 'Error de validación',
-                           text: 'Por favor, revisa los campos marcados.',
-                           confirmButtonText: 'Entendido'
-                      });
-                      // Do NOT hide the modal on validation errors
-                      return; // Stop here
-                 }
-                 // Handle other HTTP errors
-                 throw new Error(`HTTP error! status: ${response.status}`);
+                
+                if (response.status === 422) {
+                    const errors = await response.json();
+                    displayValidationErrors(errors.errors); 
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error de validación',
+                        text: 'Por favor, revisa los campos marcados.',
+                        confirmButtonText: 'Entendido'
+                    });
+                   
+                    return; 
+                }
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            // Handle success response
-            const result = await response.json(); // Or response.text() if your backend doesn't return JSON on success
+            const result = await response.json(); 
 
             Swal.fire(
                 '¡Guardado!',
@@ -1171,13 +1258,11 @@
                 'success'
             );
 
-            // Hide the modal
             let modalElement = modalForm ? KTModal.getInstance(modalForm) : null;
             if (modalElement) {
-                modalElement.hide(); // This will also trigger the 'hide' listener and resetForm()
+                modalElement.hide(); 
             }
 
-            // Refresh the data table
             fetchUbicaciones();
 
         } catch (error) {
@@ -1188,9 +1273,8 @@
                 errorMessage,
                 'error'
             );
-             // Do NOT hide the modal on general errors, user might want to retry
+          
         } finally {
-            // Hide loading indicator and re-enable button in all cases (success, validation error, other error)
              if (submitButton) {
                  submitButton.removeAttribute('data-kt-indicator');
                  submitButton.disabled = false;
@@ -1208,34 +1292,32 @@
 
           if (!errors) return;
 
-          // Map backend field names to frontend input IDs/handling
           const fieldMap = {
                'nombre': { id: 'nombre', isMapCoord: false },
                'tipo_id': { id: 'tipo_id', isMapCoord: false },
                'estado': { id: 'estado', isMapCoord: false },
-               'latitude': { id: 'latitudeHidden', isMapCoord: true }, // Map coords to their hidden inputs
+               'latitude': { id: 'latitudeHidden', isMapCoord: true },
                'longitude': { id: 'longitudeHidden', isMapCoord: true },
-               // Add other fields here if needed
           };
 
           for (const fieldName in errors) {
                if (errors.hasOwnProperty(fieldName)) {
-                    const fieldErrors = errors[fieldName]; // Array of messages for this field
-                    const errorText = fieldErrors.join(', '); // Join multiple messages
+                    const fieldErrors = errors[fieldName];
+                    const errorText = fieldErrors.join(', ');
 
                     const mappedField = fieldMap[fieldName];
 
                     if (mappedField) {
                          if (mappedField.isMapCoord) {
-                              // Handle map coordinate errors
+                            
                               if (mapSelectorDiv) mapSelectorDiv.style.borderColor = 'red';
                               if (mapCoordsFeedback) {
                                    mapCoordsFeedback.textContent = errorText;
                                    mapCoordsFeedback.style.display = 'block';
                               }
-                              // Also mark the map label if you added text-danger in validateForm
-                              const mapLabel = formUbicacion.querySelector('.form-label.text-danger'); // Find if it was already marked
-                              if (!mapLabel) { // If not already marked (e.g., no client-side validation ran)
+                             
+                              const mapLabel = formUbicacion.querySelector('.form-label.text-danger');
+                              if (!mapLabel) { 
                                    const labels = formUbicacion.querySelectorAll('.form-label');
                                    for (const label of labels) {
                                         if (label.textContent.includes('Selecciona la ubicación en el mapa')) {
@@ -1246,16 +1328,16 @@
                               }
 
                          } else {
-                              // Handle standard input/select errors
+                              
                               const inputElement = document.getElementById(mappedField.id);
                               if (inputElement) {
                                    inputElement.classList.add('is-invalid');
-                                   // Find the feedback element (assuming it's sibling or nearby)
+                                
                                    let feedbackElement = inputElement.nextElementSibling;
                                     while(feedbackElement && !feedbackElement.classList.contains('invalid-feedback')) {
                                          feedbackElement = feedbackElement.nextElementSibling;
                                     }
-                                   // If not found as sibling, try searching within the form
+                    
                                     if (!feedbackElement) {
                                          feedbackElement = formUbicacion.querySelector(`#${mappedField.id} + .invalid-feedback`);
                                     }
@@ -1266,7 +1348,6 @@
                                         feedbackElement.style.display = 'block';
                                    }
 
-                                   // Add text-danger class to the label
                                    const labelElement = formUbicacion.querySelector(`label[for="${mappedField.id}"]`);
                                    if (labelElement) labelElement.classList.add('text-danger');
                               } else {
@@ -1274,16 +1355,409 @@
                               }
                          }
                     } else {
-                         // Handle errors for fields not explicitly mapped (e.g., 'imagen_destacada')
-                         // For file input, Metronic's ImageInput might need specific error handling.
-                         // A general approach is to log or show a generic message.
-                         console.warn(`Backend validation error for unmapped field "${fieldName}": ${errorText}`);
-                         // You might want to show a general error message for unmapped fields
-                         // or try to find the relevant part of the form to highlight.
+                        console.warn(`Backend validation error for unmapped field "${fieldName}": ${errorText}`);
                     }
                }
           }
      }
+
+
+
+    // =========================================================================
+    // ===> INICIO: Funciones para la Galería de Imágenes <===
+    // =========================================================================
+
+    /**
+     * Construye la URL para una acción específica de la galería.
+     * @param {number|string} ubicacionId El ID de la ubicación.
+     * @param {number|string|null} [imageId=null] El ID de la imagen (para borrar).
+     * @param {string|null} [action=null] Acción adicional ('reorder').
+     * @returns {string} La URL completa.
+     */
+    function getGalleryApiUrl(ubicacionId, imageId = null, action = null) {
+        let url = galleryBaseUrl.replace('{ubicacionId}', ubicacionId);
+        if (imageId) {
+            url += `/${imageId}`;
+        }
+        if (action) {
+            url += `/${action}`;
+        }
+        return url;
+    }
+
+    /**
+     * Abre el modal de la galería, carga las imágenes y configura el estado.
+     * @param {number|string} ubicacionId El ID de la ubicación.
+     * @param {string} ubicacionNombre El nombre de la ubicación.
+     */
+    async function openImageGallery(ubicacionId, ubicacionNombre) {
+        currentGalleryUbicacionId = ubicacionId;
+        currentGalleryImages = [];
+        if (galleryUbicacionNombreSpan) galleryUbicacionNombreSpan.textContent = ubicacionNombre || 'Ubicación';
+        galleryImageContainer.innerHTML = ''; 
+        galleryLoadingIndicator.style.display = 'block'; 
+        addGalleryImageInput.value = null; 
+        galleryUploadIndicator.style.display = 'none'; 
+
+       
+        if (imageGalleryModal) {
+            imageGalleryModal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                imageGalleryModal.classList.add('opacity-100');
+                if (galleryModalContent) {
+                    galleryModalContent.classList.remove('scale-95', 'opacity-0');
+                    galleryModalContent.classList.add('scale-100', 'opacity-100');
+                }
+            });
+        }
+
+        try {
+            const url = getGalleryApiUrl(ubicacionId);
+            const response = await fetch(url, {
+                headers: { 'Accept': 'application/json' }
+            });
+            if (!response.ok) {
+                throw new Error(`Error al cargar galería: ${response.statusText}`);
+            }
+            let imagesData = await response.json();
+            imagesData = imagesData.imagenes; 
+            console.log("Datos de imágenes:", imagesData);
+ 
+            currentGalleryImages = imagesData.sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
+            renderImageGallery(); 
+        } catch (error) {
+            console.error("Error fetching gallery images:", error);
+            galleryImageContainer.innerHTML = `<p class="text-red-500 col-span-full text-center py-10">Error al cargar la galería.</p>`;
+        } finally {
+            galleryLoadingIndicator.style.display = 'none'; 
+        }
+    }
+
+    /**
+     * Cierra el modal de la galería y resetea el estado.
+     */
+    function closeImageGallery() {
+        if (galleryModalContent) {
+            galleryModalContent.classList.remove('scale-100', 'opacity-100');
+            galleryModalContent.classList.add('scale-95', 'opacity-0');
+        }
+        if (imageGalleryModal) {
+            imageGalleryModal.classList.remove('opacity-100');
+            setTimeout(() => {
+                imageGalleryModal.classList.add('hidden');
+               
+                currentGalleryUbicacionId = null;
+                currentGalleryImages = [];
+                galleryImageContainer.innerHTML = ''; 
+                if (galleryUbicacionNombreSpan) galleryUbicacionNombreSpan.textContent = '';
+            }, 300); 
+        }
+    }
+
+    /**
+     * Renderiza las tarjetas de imagen en el modal de la galería.
+     */
+    function renderImageGallery() {
+        console.log('Renderizando galería de imágenes...');
+        galleryImageContainer.innerHTML = ''; 
+
+        if (currentGalleryImages.length === 0) {
+            galleryImageContainer.innerHTML = '<p class="text-gray-500 col-span-full text-center py-10">Esta galería está vacía. ¡Agrega algunas imágenes!</p>';
+            return;
+        }
+
+        currentGalleryImages.forEach((imageData, index) => {
+            const imageId = imageData.id;
+            const imageUrl = imageData.url.startsWith('http') ? imageData.url : `/storage/${imageData.url}`; 
+
+            const card = document.createElement('div');
+            card.className = 'relative border border-gray-200 rounded-lg shadow-sm overflow-hidden group cursor-move transition-transform duration-150 ease-in-out hover:shadow-md bg-white';
+            card.setAttribute('draggable', true);
+            card.dataset.imageId = imageId;
+            card.dataset.index = index; 
+
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = `Imagen ${index + 1}`;
+            img.className = 'w-full h-auto object-cover aspect-square block';
+            img.onerror = function() {
+                this.onerror=null;
+                this.src='https://placehold.co/150x150/cccccc/ffffff?text=Error';
+                this.alt = 'Error al cargar imagen';
+            };
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>`;
+            deleteBtn.className = 'absolute top-1.5 right-1.5 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 z-10'; // Añadir z-index
+            deleteBtn.title = "Eliminar imagen";
+            deleteBtn.setAttribute('aria-label', 'Eliminar imagen');
+            deleteBtn.dataset.imageId = imageId;
+
+            // Event Listener para eliminar (usando delegación o directo)
+            deleteBtn.addEventListener('click', handleDeleteImageClick);
+
+            // Event Listeners para Drag and Drop
+            card.addEventListener('dragstart', handleGalleryDragStart);
+            card.addEventListener('dragover', handleGalleryDragOver);
+            card.addEventListener('dragenter', handleGalleryDragEnter);
+            card.addEventListener('dragleave', handleGalleryDragLeave);
+            card.addEventListener('drop', handleGalleryDrop);
+            card.addEventListener('dragend', handleGalleryDragEnd);
+
+            card.appendChild(img);
+            card.appendChild(deleteBtn);
+            galleryImageContainer.appendChild(card);
+        });
+    }
+
+    /**
+     * Maneja el clic en el botón de eliminar imagen.
+     */
+    async function handleDeleteImageClick(event) {
+        event.stopPropagation();
+        const button = event.currentTarget;
+        const imageId = button.dataset.imageId;
+        const ubicacionId = currentGalleryUbicacionId;
+
+        if (!imageId || !ubicacionId) {
+            console.error("Falta imageId o ubicacionId para eliminar.");
+            return;
+        }
+
+        // Confirmación con Swal
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: "¡No podrás revertir la eliminación de esta imagen!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminarla',
+            cancelButtonText: 'Cancelar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                button.disabled = true; // Deshabilitar botón mientras se procesa
+                button.innerHTML = '<svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>'; // Indicador
+
+                try {
+                    const url = `ubicaciones/${ubicacionId}/gallery/${imageId}`; // URL para eliminar imagen
+                    const response = await fetch(url, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        // Intentar obtener mensaje de error del backend
+                        let errorMsg = `Error al eliminar la imagen (Status: ${response.status}).`;
+                        try {
+                            const errorData = await response.json();
+                            errorMsg = errorData.message || errorMsg;
+                        } catch (e) { /* Ignorar si no hay JSON */ }
+                        throw new Error(errorMsg);
+                    }
+
+                    // Éxito: Eliminar del array local y re-renderizar
+                    currentGalleryImages = currentGalleryImages.filter(img => img.id != imageId);
+                    console.log(imageId);
+                    
+                    console.log(currentGalleryImages);
+                    
+                    renderImageGallery();
+                    Swal.fire('¡Eliminada!', 'La imagen ha sido eliminada.', 'success');
+
+                } catch (error) {
+                    console.error("Error deleting image:", error);
+                    Swal.fire('Error', error.message || 'No se pudo eliminar la imagen.', 'error');
+                    // Restaurar botón en caso de error
+                    button.disabled = false;
+                     button.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>`;
+                }
+            }
+        });
+    }
+
+    /**
+     * Maneja la selección de un nuevo archivo para subir a la galería.
+     */
+    async function handleAddImageChange(event) {
+        const file = event.target.files[0];
+        const ubicacionId = currentGalleryUbicacionId;
+
+        if (!file || !ubicacionId) {
+            addGalleryImageInput.value = null;
+            return;
+        }
+
+        if (!file.type.startsWith('image/')) {
+            Swal.fire('Archivo no válido', 'Por favor, selecciona un archivo de imagen (JPG, PNG, GIF, etc.).', 'warning');
+            addGalleryImageInput.value = null;
+            return;
+        }
+
+        // Mostrar indicador de subida
+        galleryUploadIndicator.style.display = 'block';
+        addGalleryImageInput.disabled = true;
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const url = `ubicaciones/${ubicacionId}/gallery`; 
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                let errorMsg = `Error al subir la imagen (Status: ${response.status}).`;
+                 try {
+                     const errorData = await response.json();
+                     // Manejar errores de validación específicos si el backend los devuelve
+                     if (response.status === 422 && errorData.errors && errorData.errors.image) {
+                        errorMsg = errorData.errors.image.join(', ');
+                     } else {
+                         errorMsg = errorData.message || errorMsg;
+                     }
+                 } catch (e) { /* Ignorar si no hay JSON */ }
+                 throw new Error(errorMsg);
+            }
+
+            const newImageData = await response.json();
+
+            currentGalleryImages.push(newImageData);
+            currentGalleryImages.sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
+
+            renderImageGallery();
+
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            Swal.fire('Error', error.message || 'No se pudo subir la imagen.', 'error');
+        } finally {
+            // Ocultar indicador y rehabilitar input
+            galleryUploadIndicator.style.display = 'none';
+            addGalleryImageInput.value = null; // Limpiar el input
+            addGalleryImageInput.disabled = false;
+        }
+    }
+
+    /**
+     * Guarda el nuevo orden de las imágenes en el backend.
+     */
+    async function saveImageOrder() {
+        const ubicacionId = currentGalleryUbicacionId;
+        if (!ubicacionId || currentGalleryImages.length === 0) {
+            return; // No hay nada que guardar
+        }
+
+        // Crear un array solo con los IDs en el nuevo orden
+        const orderedImageIds = currentGalleryImages.map(img => img.id);
+
+        try {
+            const url = `ubicaciones/${ubicacionId}/gallery/reorder`; 
+            const response = await fetch(url, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ order: orderedImageIds })
+            });
+
+            if (!response.ok) {
+                let errorMsg = `Error al guardar el orden (Status: ${response.status}).`;
+                try {
+                    const errorData = await response.json();
+                    errorMsg = errorData.message || errorMsg;
+                } catch (e) { /* Ignorar */ }
+                throw new Error(errorMsg);
+            }
+
+            Swal.fire({ icon: 'success', title: 'Orden guardado', timer: 1500, showConfirmButton: false });
+
+        } catch (error) {
+            console.error("Error saving image order:", error);
+            Swal.fire('Error', error.message || 'No se pudo guardar el nuevo orden de las imágenes.', 'error');
+
+        } 
+    }
+
+
+    // --- Funciones de Drag and Drop para la Galería ---
+
+    function handleGalleryDragStart(e) {
+        galleryDraggedItem = this;
+        galleryDragStartIndex = parseInt(this.dataset.index);
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', galleryDragStartIndex);
+        setTimeout(() => this.classList.add('dragging'), 0);
+    }
+
+    function handleGalleryDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        return false;
+    }
+
+    function handleGalleryDragEnter(e) {
+        if (this !== galleryDraggedItem) {
+            this.classList.add('drag-over'); 
+        }
+    }
+
+    function handleGalleryDragLeave(e) {
+        this.classList.remove('drag-over');
+    }
+
+    function handleGalleryDrop(e) {
+        e.stopPropagation();
+        e.preventDefault();
+
+        this.classList.remove('drag-over');
+
+        if (galleryDraggedItem !== this) {
+            const dropIndex = parseInt(this.dataset.index);
+            const originalIndex = parseInt(e.dataTransfer.getData('text/plain'));
+
+            const itemToMove = currentGalleryImages.splice(originalIndex, 1)[0];
+            currentGalleryImages.splice(dropIndex, 0, itemToMove);
+
+            renderImageGallery();
+
+            saveImageOrder();
+        }
+        return false;
+    }
+
+    function handleGalleryDragEnd(e) {
+    
+        if(galleryDraggedItem) { 
+            galleryDraggedItem.classList.remove('dragging');
+        }
+        document.querySelectorAll('#galleryImageContainer .drag-over').forEach(el => {
+            el.classList.remove('drag-over');
+        });
+
+        galleryDraggedItem = null;
+        galleryDragStartIndex = -1;
+    }
+
+    // ===> FIN: Funciones para la Galería de Imágenes <===
+
+
     // =========================================================================
     // DOM Ready
     // =========================================================================
@@ -1314,25 +1788,50 @@
               console.warn("Elemento #tipo_id no encontrado. No se cargarán los tipos.");
          }
 
-        // Get modal instance and set up show listener for map initialization
+        if (imageUploadInput && imagePreviewElement) {
+            imageUploadInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreviewElement.src = e.target.result;
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            imagePreviewElement.onerror = function() {
+                if (imagePreviewElement.src !== defaultImageUrl) { 
+                    imagePreviewElement.src = defaultImageUrl;
+                }
+            };
+
+            imagePreviewElement.src = defaultImageUrl;
+
+        } else {
+            console.warn("Elementos de vista previa de imagen (#imagen_destacada_input o #imagePreview) no encontrados en DOMContentLoaded.");
+        }
+      
+
         let modalElement = modalForm ? KTModal.getInstance(modalForm) : null;
 
         if (modalElement) {
             modalElement.on('show', () => {
-                // Use coordinates stored during edit preparation, or default coords
-                const initialCoords = (modalElement._coordsToShowMap) ? modalElement._coordsToShowMap : defaultCoords;
+                // ESTA LÓGICA PARECE CORRECTA:
+                const initialCoords = modalElement._coordsToShowMap ? modalElement._coordsToShowMap : defaultCoords;
+                console.log("Modal 'show' event: Iniciando mapa con coords:", initialCoords);
+
                 initMapSelector(initialCoords);
-                 // Clear the temporary coords after use
-                 delete modalElement._coordsToShowMap;
+                delete modalElement._coordsToShowMap;
             });
 
-             // Add listener for modal hide to reset the form
-             modalElement.on('hide', () => {
-                  resetForm();
-             });
+            modalElement.on('hide', () => {
+                console.log("Modal 'hide' event: Reseteando formulario y mapa.");
+                resetForm();
+            });
 
         } else {
-            console.error("Elemento modal #createUbicacionModal no encontrado o KTModal instance failed.");
+            console.error("Elemento modal #createUbicacionModal no encontrado o instancia KTModal falló.");
         }
 
         // Add click listener to map div to clear validation feedback
@@ -1347,17 +1846,15 @@
 
 
         // --- Data Table & Pagination Event Listeners ---
-
-        // Search Input (with debounce)
         let debounceTimer;
         if (searchInput) {
             searchInput.addEventListener('input', function() {
                 clearTimeout(debounceTimer);
                 debounceTimer = setTimeout(() => {
                     searchQuery = this.value;
-                    currentPage = 1; // Reset to first page on new search
+                    currentPage = 1; 
                     fetchUbicaciones();
-                }, 300); // 300ms delay
+                }, 300);
             });
         } else {
              console.warn("Elemento #buscarUbicaciones no encontrado.");
@@ -1368,7 +1865,7 @@
         if (perPageSelect) {
             perPageSelect.addEventListener('change', function() {
                 itemsPerPage = parseInt(this.value);
-                currentPage = 1; // Reset to first page on per-page change
+                currentPage = 1; 
                 fetchUbicaciones();
             });
         } else {
@@ -1385,6 +1882,44 @@
              formUbicacion.addEventListener('submit', handleFormSubmit);
         } else {
              console.error("Elemento form #formUbicacion no encontrado. No se puede añadir listener de submit.");
+        }
+
+
+        if (tbody) {
+            tbody.addEventListener('click', function(event) {
+                const galleryButton = event.target.closest('button[data-ubicacion-id]');
+                if (galleryButton) {
+                    const ubicacionId = galleryButton.dataset.ubicacionId;
+                    const ubicacionNombre = galleryButton.dataset.ubicacionNombre;
+                    openImageGallery(ubicacionId, ubicacionNombre);
+                }
+            });
+        }
+
+        if (closeGalleryModalBtn) {
+            closeGalleryModalBtn.addEventListener('click', closeImageGallery);
+        }
+
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                if (imageGalleryModal && !imageGalleryModal.classList.contains('hidden')) {
+                    closeImageGallery();
+                }
+                else if (ubicacionModalInstance && modalForm && !modalForm.classList.contains('hidden')) {
+                if (getComputedStyle(modalForm).display !== 'none') {
+                    ubicacionModalInstance.hide();
+                }
+                } else if (modalForm && !modalForm.classList.contains('hidden') && getComputedStyle(modalForm).display !== 'none'){
+                    const bsModal = bootstrap.Modal.getInstance(modalForm);
+                    if(bsModal) bsModal.hide();
+                }
+            }
+        });
+
+
+        if (addGalleryImageInput) {
+            addGalleryImageInput.addEventListener('change', handleAddImageChange);
         }
     });
 

@@ -4,30 +4,22 @@
 <head>
     <base href="../../">
     <title>
-        Aplicación de Mapa Mejorada
+        CAGUZ
     </title>
     <meta charset="utf-8" />
     <meta content="follow, index" name="robots" />
-    <link href="https://keenthemes.com/metronic" rel="canonical" />
     <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
-    <meta content="Aplicación web con Google Maps, navegación mejorada, búsqueda y galería." name="description" />
-    <meta content="@keenthemes" name="twitter:site" />
-    <meta content="@keenthemes" name="twitter:creator" />
-    <meta content="summary_large_image" name="twitter:card" />
-    <meta content="Aplicación de Mapa Mejorada" name="twitter:title" />
-    <meta content="Aplicación web con Google Maps, navegación mejorada, búsqueda y galería." name="twitter:description" />
-    <meta content="assets/media/app/og-image.png" name="twitter:image" />
-    <meta content="https://keenthemes.com/metronic" property="og:url" />
+    <meta content="CAGUZ - Aplicación Maps, navegación mejorada, búsqueda y galería." name="description" />
     <meta content="es_CO" property="og:locale" />
     <meta content="website" property="og:type" />
     <meta content="@keenthemes" property="og:site_name" />
-    <meta content="Aplicación de Mapa Mejorada" property="og:title" />
-    <meta content="Aplicación web con Google Maps, navegación mejorada, búsqueda y galería." property="og:description" />
+    <meta content="CAGUZ" property="og:title" />
+    <meta content="CAGUZ - Aplicación web Maps, navegación mejorada, búsqueda y galería." property="og:description" />
     <meta content="assets/media/app/og-image.png" property="og:image" />
     <link href="assets/media/app/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180" />
-    <link href="assets/media/app/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png" />
-    <link href="assets/media/app/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png" />
-    <link href="assets/media/app/favicon.ico" rel="shortcut icon" />
+    <link href="{{ asset('favicon.jpg') }}" rel="icon" sizes="32x32" type="image/png" />
+    <link href="{{ asset('favicon.jpg') }}" rel="icon" sizes="16x16" type="image/png" />
+    <link href="{{ asset('favicon.jpg') }}" rel="shortcut icon" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link href="assets/vendors/apexcharts/apexcharts.css" rel="stylesheet" />
     <link href="assets/vendors/keenicons/styles.bundle.css" rel="stylesheet" />
@@ -39,9 +31,9 @@
         #map { height: 100vh; width: 100%; }
 
         .place-icon {
-            width: 32px; /* Tamaño total del círculo */
+            width: 32px;
             height: 32px;
-            border-radius: 50%; /* Hace que sea un círculo */
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -49,66 +41,87 @@
             transform: translate(-50%, -50%);
             box-shadow: 0px 2px 5px rgba(0,0,0,0.3);
             border: 2px solid white;
-            background-color: #17C653; /* Color de fondo por defecto */
+            background-color: #17C653;
             cursor: pointer;
         }
 
         .place-icon img {
-            width: 25px; /* Tamaño del icono interno */
+            width: 25px;
             height: 25px;
             border-radius: 50%;
         }
 
-        /* Etiqueta de nombre del lugar */
         .place-label {
-            position: absolute;
-            background: white;
-            color: #333;
-            font-size: 14px;
-            font-weight: bold;
-            padding: 3px 8px;
-            border-radius: 4px;
-            white-space: nowrap;
-            box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
-            cursor: pointer;
-             transform: translate(20px, -10px); 
+                position: absolute;
+                background: white;
+                color: #333;
+                font-size: 14px;
+                font-weight: bold;
+                padding: 3px 8px;
+                border-radius: 4px;
+                white-space: nowrap;
+                box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
+                cursor: pointer;
+                transform: translate(20px, -10px); 
+            }
+
+            /* 🔹 Estilos Responsive */
+            @media (max-width: 768px) {
+                .place-label {
+                    font-size: 12px;
+                    padding: 2px 6px;
+                    transform: translate(18px, -8px); 
+                }
+                .place-icon {
+                    width: 30px;
+                    height: 30px;
+                }
+                .place-icon img {
+                    width: 22px;
+                    height: 22px;
+                }
+            }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.7);
+            }
+            70% {
+                transform: scale(1.05); 
+                box-shadow: 0 0 10px 10px rgba(66, 133, 244, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(66, 133, 244, 0);
+            }
         }
 
-        /* 🔹 Estilos Responsive */
-        @media (max-width: 768px) {
-            .place-label {
-                font-size: 12px;
-                padding: 2px 6px;
-                 transform: translate(18px, -8px); 
-            }
-            .place-icon {
-                width: 30px;
-                height: 30px;
-            }
-            .place-icon img {
-                width: 22px;
-                height: 22px;
-            }
+        .pulsating-button {
+            animation: pulse 2s infinite ease-in-out;
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('assets/css/preloader.css') }}">
 </head>
 
 <body
     class="antialiased flex h-full text-base text-gray-700 [--tw-page-bg:#fefefe] [--tw-page-bg-dark:var(--tw-coal-500)] demo1 sidebar-fixed header-fixed bg-[--tw-page-bg] dark:bg-[--tw-page-bg-dark]">
 
+    <div id="preloader">
+        <img src="{{ asset('assets/media/images/preload.png') }}" alt="Cargando...">
+        <p class="loading-text">Ubícate con facilidad</p>
+    </div>
+
     <div id="map"></div>
 
     <div class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-3xl" id="buscar" data-modal-toggle="#modalBusqueda">
         <div class="flex items-center bg-white shadow-md rounded-full px-4 py-2 space-x-3">
-        <!-- Icono de búsqueda -->
         <i class="ki-outline ki-magnifier"></i>
     
-        <!-- Input de búsqueda -->
         <input type="text"
                 class="flex-1 focus:outline-none text-gray-800 placeholder-gray-400 bg-transparent"
                 placeholder="Busca aquí..." />
     
-        <!-- Logo de la empresa (imagen) -->
         <img src="SIMBOLO.png"
             alt="Logo empresa"
             class="w-8 h-8 rounded-full object-cover" />
@@ -116,14 +129,11 @@
     </div>
       
       
-      
-    <button id="iniciarRuta" class="btn btn-outline btn-primary fixed bottom-28 right-4 z-10">
+    <button id="iniciarRuta" class="btn btn-outline btn-primary fixed bottom-28 right-4 z-10 pulsating-button ">
         <i class="ki-filled ki-route"></i> Iniciar Ruta
     </button>
-    {{-- <button id="buscar" class="btn btn-outline btn-success fixed bottom-28 right-4 z-10" data-modal-toggle="#modalBusqueda">
-        <i class="ki-outline ki-magnifier"></i> Buscar
-    </button> --}}
-    <button id="centrar" class="btn btn-outline btn-info fixed bottom-16 right-4 z-10">
+
+    <button id="centrar" class="btn btn-outline btn-info fixed bottom-16 right-4 z-10 hidden">
         <i class="ki-filled ki-focus"></i> Centrar
     </button>
     <button id="salirRuta" class="btn btn-outline btn-danger fixed bottom-4 right-4 z-10 hidden">
@@ -146,8 +156,8 @@
                     </div>
                 </div>
                 <div id="searchResults" class="px-3.5 scrollable-y border border-gray-300 rounded-md max-h-[60vh] overflow-y-auto mb-1">
-                    
-            </div>
+                        
+                </div>
             </div>
         </div>
     </div>
@@ -169,14 +179,14 @@
                         </div>
                         <div class="overflow-x-auto">
                             <div id="thumbnailContainer" class="flex gap-4">
-                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+    <script src="{{ asset('assets/js/preloader.js') }}"></script>
     <script>
         // --- Variables Globales ---
         let map;
@@ -215,9 +225,9 @@
 
             if (modalInstanceBusq) {
                 modalInstanceBusq.on('show', () => {
-                    realizarBusqueda(); // Cargar resultados al abrir
+                    realizarBusqueda();
                     setTimeout(() => {
-                        document.getElementById('searchInput').focus(); // Enfocar input
+                        document.getElementById('searchInput').focus(); 
                     }, 200);
                    
                 });
@@ -237,9 +247,9 @@
             document.getElementById('salirRuta').addEventListener('click', stopNavigation);
 
             // Estado inicial de botones
-            document.getElementById("iniciarRuta").classList.remove("hidden");
+            document.getElementById("iniciarRuta").classList.add("hidden");
             document.getElementById("buscar").classList.remove("hidden");
-            document.getElementById("centrar").classList.remove("hidden");
+            // document.getElementById("centrar").classList.remove("hidden");
             document.getElementById("salirRuta").classList.add("hidden");
 
              // Listener para resultados de búsqueda (Delegación)
@@ -258,21 +268,31 @@
                     zoom: 15,
                     center: DEFAULT_LOCATION,
                     streetViewControl: false,
-                    mapTypeControl: false,
+                    mapTypeControl: true,
+                    mapTypeControlOptions: {
+                        style: google.maps.MapTypeControlStyle.DEFAULT,
+                        position: google.maps.ControlPosition.LEFT_BOTTOM
+                    },
                     zoomControl: false,
                     fullscreenControl: false,
                     mapId: 'dca8e9ef523bf712',
                     disableDefaultUI: true,
+                    styles: [
+                        {
+                            elementType: 'labels',
+                            stylers: [{ visibility: 'off' }] 
+                        },
+                    ]
                 });
 
                 directionsService = new google.maps.DirectionsService();
                 directionsRenderer = new google.maps.DirectionsRenderer({
-                    suppressMarkers: true,    // No mostrar marcadores A/B por defecto
-                    preserveViewport: true,  // CLAVE: No ajustar zoom/centro al poner ruta
+                    suppressMarkers: true,    
+                    preserveViewport: true, 
                     polylineOptions: {
-                        strokeColor: '#4285F4', // Color de la ruta
-                        strokeWeight: 8,       // Grosor de la ruta
-                        strokeOpacity: 1     // Opacidad
+                        strokeColor: '#4285F4', 
+                        strokeWeight: 8,      
+                        strokeOpacity: 1     
                     }
                
                 });
@@ -283,10 +303,10 @@
                     watchId = navigator.geolocation.watchPosition(
                         updateUserLocation,
                         handleLocationError,
-                        { enableHighAccuracy: true, maximumAge: 500, timeout: 5000 } // Ajustar timeouts si es necesario
+                        { enableHighAccuracy: true, maximumAge: 500, timeout: 5000 }
                     );
                 } else {
-                    handleLocationError(); // Llama sin argumento para indicar no soporte
+                    handleLocationError();
                 }
 
                 // Cargar lugares en el mapa
@@ -319,14 +339,6 @@
                 message = "Tu navegador no soporta geolocalización.";
             }
 
-            // Swal.fire({
-            //     icon: 'warning',
-            //     title: 'Problema con la ubicación',
-            //     text: message + " Algunas funcionalidades estarán limitadas.",
-            //     confirmButtonText: 'Entendido',
-            //     confirmButtonColor: '#3085d6'
-            // });
-
             if (!userLocation) {
                 map.setCenter(DEFAULT_LOCATION);
                 map.setZoom(12); 
@@ -355,8 +367,8 @@
         // --- Crear/Actualizar Marcador de Usuario (Flecha Rotatoria) ---
         function createUserMarker(location, deviceHeading  = 0) {
 
-            const currentMapHeading = map ? map.getHeading() || 0 : 0; // Obtener heading actual del mapa si existe
-            const rotation = deviceHeading !== null && !isNaN(deviceHeading) ? deviceHeading : currentMapHeading; // Usar heading del dispositivo si existe, si no, el del mapa
+            const currentMapHeading = map ? map.getHeading() || 0 : 0;
+            const rotation = deviceHeading !== null && !isNaN(deviceHeading) ? deviceHeading : currentMapHeading;
 
             const icon = {
                 url: 'arrow.png', 
@@ -400,7 +412,7 @@
                         position: position,
                         map: map,
                         title: lugar.nombre,
-                        icon: "https://maps.gstatic.com/mapfiles/transparent.png" // Invisible
+                        icon: "https://maps.gstatic.com/mapfiles/transparent.png" 
                     });
 
                     // InfoWindow con acciones
@@ -419,7 +431,7 @@
                     // --- Overlay Personalizado ---
                     const divIcon = document.createElement("div");
                     divIcon.className = "place-icon";
-                    divIcon.innerHTML = `<img src="${lugar.imagen_destacada || 'assets/media/app/favicon.ico'}" alt="icono">`; // Fallback icon
+                    divIcon.innerHTML = `<img src="${lugar.imagen_destacada || 'assets/media/app/favicon.ico'}" alt="icono">`;
 
                     const divLabel = document.createElement("div");
                     divLabel.className = "place-label";
@@ -432,11 +444,10 @@
                             panes.overlayMouseTarget.appendChild(divIcon);
                             panes.overlayMouseTarget.appendChild(divLabel);
 
-                            // Event listener para abrir InfoWindow
                             [divIcon, divLabel].forEach(element => {
                                 element.addEventListener("click", (e) => {
-                                     e.stopPropagation(); // Evitar que el clic se propague al mapa
-                                    cerrarInfoWindow(); // Cerrar la anterior
+                                     e.stopPropagation();
+                                    cerrarInfoWindow(); 
                                     infoWindow.open(map, marcador);
                                     activeInfoWindow = infoWindow;
                                 });
@@ -446,7 +457,7 @@
 
                     overlay.draw = function () {
                         const projection = this.getProjection();
-                        if (!projection) return; // Asegurarse que la proyección existe
+                        if (!projection) return;
                         const pos = projection.fromLatLngToDivPixel(marcador.getPosition());
                         if (pos) {
  
@@ -466,7 +477,6 @@
                     placesMarkers.push({ marcador, overlay, infoWindow });
                 });
 
-                // Opcional: Listener para cerrar InfoWindow al hacer clic en el mapa
                 map.addListener('click', cerrarInfoWindow);
 
             } catch (error) {
@@ -477,11 +487,11 @@
         function clearPlacesMarkers() {
             placesMarkers.forEach(({ marcador, overlay, infoWindow }) => {
                 marcador.setMap(null);
-                overlay.setMap(null); // Esto debería llamar a onRemove
+                overlay.setMap(null);
                 infoWindow.close();
             });
             placesMarkers = [];
-            cerrarInfoWindow(); // Asegurar que no quede ninguna abierta
+            cerrarInfoWindow();
         }
 
         function cerrarInfoWindow() {
@@ -544,6 +554,8 @@
                 return;
             }
 
+            document.getElementById('iniciarRuta').classList.add('hidden');
+
             directionsRenderer.setDirections({ routes: [] });
          
             currentRoute = null; 
@@ -563,23 +575,20 @@
                     if (modalInstanceBusq) {
                         modalInstanceBusq.hide();
                     }
-                    // Opcional: Ajustar vista inicial si NO se está navegando
+
                     if(!navigating) {
                         map.fitBounds(currentRoute.bounds);
                     }
-                    console.log("Ruta calculada:", currentRoute);
-                     // Habilitar botón de iniciar ruta si no estaba habilitado
-                    document.getElementById('iniciarRuta').disabled = false;
+
+                    document.getElementById('iniciarRuta').classList.remove('hidden');
 
                  } else {
                      throw new Error("La API de Directions no devolvió rutas.");
                  }
             })
             .catch((e) => {
-                // Swal.close();
                 console.error("Error al calcular la ruta: ", e);
                 alert("No se pudo calcular la ruta. Verifica la conexión o las ubicaciones. Detalles: " + e.message);
-                 // Deshabilitar botón de iniciar ruta si falla el cálculo
                 document.getElementById('iniciarRuta').disabled = true;
             });
         }
@@ -597,31 +606,28 @@
 
             console.log("Iniciando navegación...");
             navigating = true;
-            initialCheckDone = false; // Permitir chequeo de desvío inicial
+            initialCheckDone = false;
            
 
             // Actualizar UI
             document.getElementById("iniciarRuta").classList.add("hidden");
             document.getElementById("buscar").classList.add("hidden");
             document.getElementById("salirRuta").classList.remove("hidden");
-            document.body.classList.add('navigating'); // Clase para estilos opcionales
+            document.body.classList.add('navigating');
 
-            // Ajustar vista del mapa para navegación
-            map.setZoom(18); // Zoom cercano
-            map.setTilt(45); // Inclinar mapa
-            map.setCenter(userLocation); // Centrar en usuario
+            map.setZoom(18); 
+            map.setTilt(45);
+            map.setCenter(userLocation); 
 
 
-             // Si watchPosition no estaba activo, asegurarse de activarlo
-             // (Normalmente ya debería estar activo desde initMap)
-             if (!watchId && navigator.geolocation) {
+            if (!watchId && navigator.geolocation) {
                 console.warn("WatchPosition no estaba activo, reiniciando...");
                 watchId = navigator.geolocation.watchPosition(
                     updateUserLocation,
                     handleLocationError,
                     { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
                 );
-             }
+            }
         }
 
         function stopNavigation() {
@@ -629,16 +635,17 @@
             navigating = false;
 
             // Resetear vista del mapa
-            map.setTilt(0);
-            map.setHeading(0);
+            map.setTilt(0);        
+            map.setHeading(0);    
+            map.setZoom(15);       
+            map.setCenter(DEFAULT_LOCATION);
 
-            // Opcional: limpiar la línea de la ruta del mapa
             directionsRenderer.setDirections({ routes: [] });
-            currentRoute = null; // Limpiar datos de ruta si se limpia del mapa
+            currentRoute = null; 
 
 
             // Actualizar UI
-            document.getElementById("iniciarRuta").classList.remove("hidden");
+            document.getElementById("iniciarRuta").classList.add("hidden");
             document.getElementById("buscar").classList.remove("hidden");
             document.getElementById("salirRuta").classList.add("hidden");
             document.body.classList.remove('navigating');
@@ -647,9 +654,9 @@
         function centerMap() {
             if (userLocation) {
                 map.setCenter(userLocation);
-                // Opcional: ajustar zoom si se desea al centrar
-                 if (!navigating) map.setZoom(16);
-                 else map.setZoom(18);
+
+                if (!navigating) map.setZoom(16);
+                else map.setZoom(18);
             } else {
                 alert("Aún no se ha detectado tu ubicación para centrar.");
             }
@@ -657,9 +664,9 @@
 
         // --- Funciones de API Backend (Búsqueda, Detalles, Galería) ---
         async function buscarUbicaciones(busqueda) {
-            // Añadir indicador visual de carga si es necesario
+          
             try {
-                 const encodedBusqueda = encodeURIComponent(busqueda || '@'); // Usar '@' si está vacío para buscar todos
+                 const encodedBusqueda = encodeURIComponent(busqueda || '@'); 
                 const response = await fetch(`/ubicaciones/buscar/${encodedBusqueda}`);
                 if (!response.ok) {
                     throw new Error(`Error de red: ${response.status} - ${response.statusText}`);
@@ -668,8 +675,7 @@
                 return data;
             } catch (error) {
                 console.error('Error al buscar ubicaciones:', error.message);
-                 // Mostrar error al usuario si es apropiado
-                return []; // Devolver array vacío en caso de error
+                return [];
             }
         }
 
@@ -682,24 +688,23 @@
                 return await response.json();
             } catch (error) {
                 console.error("Error al obtener la ubicación:", error);
-                return null; // Devolver null en caso de error
+                return null;
             }
         }
 
         async function cargarGaleria(id) {
-            cerrarInfoWindow(); // Cerrar infoWindow si está abierta
+            cerrarInfoWindow();
             if (!modalInstanceGaleria) {
                  console.error("Instancia del modal de galería no disponible.");
                  alert("No se puede mostrar la galería en este momento.");
                  return;
             }
 
-             // Mostrar un spinner o indicador de carga dentro del modal
             const mainImage = document.getElementById("mainImage");
             const thumbnailContainer = document.getElementById("thumbnailContainer");
-            mainImage.src = ''; // Limpiar imagen anterior
+            mainImage.src = '';
             thumbnailContainer.innerHTML = '<p class="text-center w-full p-4">Cargando galería...</p>';
-             modalInstanceGaleria.show();
+            modalInstanceGaleria.show();
 
 
             try {
@@ -711,30 +716,27 @@
                 }
 
                 const images = data.imagenes;
-                mainImage.src = images[0].url || ""; 
+                mainImage.src = `/storage/${images[0].url}` || ""; 
 
-                // Limpiar contenedor antes de añadir nuevas miniaturas
                 thumbnailContainer.innerHTML = "";
 
                 images.forEach((imgData, index) => {
-                    if (!imgData || !imgData.url) return; // Saltar si falta la URL
+                    if (!imgData || !imgData.url) return;
 
                     const thumb = document.createElement("img");
-                    thumb.src = imgData.url;
+                    thumb.src = `/storage/${imgData.url}`;
                     thumb.alt = `Miniatura ${index + 1}`;
-                     // Clases de Tailwind para estilo y estado activo/hover
+
                     thumb.className = "object-cover object-center h-20 w-20 rounded-lg cursor-pointer border-2 border-transparent hover:border-blue-500 transition duration-200 ease-in-out";
 
                     thumb.addEventListener("click", () => {
-                        mainImage.src = imgData.url;
-                        // Resaltar miniatura activa
+                        mainImage.src = `/storage/${imgData.url}`;
                         document.querySelectorAll("#thumbnailContainer img").forEach(img => img.classList.replace("border-blue-500", "border-transparent"));
                         thumb.classList.replace("border-transparent", "border-blue-500");
                     });
                     thumbnailContainer.appendChild(thumb);
                 });
 
-                // Marcar la primera miniatura como activa por defecto
                 if (thumbnailContainer.children.length > 0) {
                      thumbnailContainer.children[0].classList.replace("border-transparent", "border-blue-500");
                 }
@@ -749,23 +751,22 @@
         async function manejarBusqueda() {
             const now = Date.now();
             if (now - lastSearchTime < searchCooldown) {
-                 // Aún no ha pasado el tiempo de cooldown, no hacer nada
                 return;
             }
-            lastSearchTime = now; // Actualizar el tiempo de la última búsqueda
+            lastSearchTime = now;
             await realizarBusqueda();
         }
 
         async function realizarBusqueda() {
             let busqueda = document.getElementById('searchInput').value.trim();
             const contenedor = document.getElementById('searchResults');
-            if (!contenedor) return; // Salir si el contenedor no existe
+            if (!contenedor) return;
 
-            contenedor.innerHTML = '<p class="text-gray-500 text-sm p-2 text-center">Buscando...</p>'; // Feedback de carga
+            contenedor.innerHTML = '<p class="text-gray-500 text-sm p-2 text-center">Buscando...</p>';
 
             const resultados = await buscarUbicaciones(busqueda);
 
-            contenedor.innerHTML = ''; // Limpiar resultados anteriores
+            contenedor.innerHTML = '';
 
             if (resultados.length === 0) {
                 contenedor.innerHTML = '<p class="text-gray-500 text-sm p-2 text-center">No se encontraron resultados.</p>';
@@ -775,10 +776,9 @@
             // Construir tarjetas dinámicamente
             resultados.forEach(ubicacion => {
                 const card = document.createElement('div');
-                 // Usar clases más simples o ajustar según el framework CSS
-                 card.className = 'flex items-center justify-between p-2 mb-1 hover:bg-gray-100 cursor-pointer border-b border-gray-200 last:border-b-0';
-                 card.setAttribute('data-id', ubicacion.id);
-                 card.setAttribute('data-nombre', ubicacion.nombre); // Guardar nombre para confirmación
+                card.className = 'flex items-center justify-between p-2 mb-1 hover:bg-gray-100 cursor-pointer border-b border-gray-200 last:border-b-0';
+                card.setAttribute('data-id', ubicacion.id);
+                card.setAttribute('data-nombre', ubicacion.nombre); 
 
                 card.innerHTML = `
                     <div class="flex-grow pr-4">
@@ -797,20 +797,18 @@
 
         // --- Manejador de Clics en Resultados de Búsqueda (Delegación) ---
         async function handleSearchResultClick(event) {
-             const card = event.target.closest('.flex.items-center.justify-between'); // Selector más específico de la tarjeta
-             if (!card) return; // Clic fuera de una tarjeta
+            const card = event.target.closest('.flex.items-center.justify-between');
+            if (!card) return;
 
-             const ubicacionId = card.getAttribute('data-id');
-             const ubicacionNombre = card.getAttribute('data-nombre');
+            const ubicacionId = card.getAttribute('data-id');
+            const ubicacionNombre = card.getAttribute('data-nombre');
 
-             // Verificar si se hizo clic en el botón de galería
-             if (event.target.closest('.btn-galeria-busqueda')) {
-                 event.stopPropagation(); // Evitar que el clic active la ruta
-                 cargarGaleria(ubicacionId);
-             } else {
-                 // Clic en la tarjeta (no en el botón de galería) -> Confirmar ruta
-                 confirmAndSearchPlace(ubicacionId, ubicacionNombre);
-             }
+            if (event.target.closest('.btn-galeria-busqueda')) {
+                event.stopPropagation();
+                cargarGaleria(ubicacionId);
+            } else {
+                confirmAndSearchPlace(ubicacionId, ubicacionNombre);
+            }
         }
 
     </script>
